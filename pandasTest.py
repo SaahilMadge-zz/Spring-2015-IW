@@ -1,6 +1,6 @@
 import pandas
 import numpy
-import matplotlib
+import matplotlib.pyplot as plt
 from scipy import stats
 
 def findPercentile(marketCap, marketCapArray):
@@ -58,10 +58,13 @@ for company in tsymList:
 
 # # msft = df[df['TSYMBOL'] == 'MSFT']
 # # msftPrice = msft['PRC']
+alpha = 0.15  # percent change needed to be significant
+
+standardDeviationArray = []
+meanReturnArray = []
 
 def findChangeIndices(companyName):
-	alpha = 0.15  # percent change needed to be significant
-
+	
 	priceList = list(df[df['TICKER'] == str(companyName)]['PRC'])
 	# print priceList
 	# print priceList[0]
@@ -101,6 +104,17 @@ for companyName in tsymList:
 
 print percentileChangesArray
 print sum(percentileChangesArray)
+
+# plot
+decileArray = []
+for i in range(10):
+	decileArray.append('%d decile' % (i+1))
+
+x_pos = numpy.arange(len(decileArray))
+plt.bar(x_pos, percentileChangesArray)
+plt.xticks(x_pos, decileArray)
+plt.ylabel('Days with more than %f%% change in stock price' % (alpha*100))
+plt.show()
 
 # for companyName in tsymList:
 #     if(len(companyChanges[companyName]) > 10):
