@@ -61,11 +61,17 @@ for company in tsymList:
 alpha = 0.15  # percent change needed to be significant
 
 standardDeviationArray = []
+for i in range(10):
+	standardDeviationArray.append([])
+
 meanReturnArray = []
+for i in range(10):
+	meanReturnArray.append([])
 
 def findChangeIndices(companyName):
 	
-	priceList = list(df[df['TICKER'] == str(companyName)]['PRC'])
+	priceList = numpy.array(list(df[df['TICKER'] == str(companyName)]['PRC']))
+	priceList = priceList[~numpy.isnan(priceList)]
 	# print priceList
 	# print priceList[0]
 	# print priceList
@@ -94,16 +100,40 @@ def findChangeIndices(companyName):
 
 # print marketCapDict['AA']
 
+def findMean(companyName):
+	priceList = numpy.array(list(df[df['TICKER'] == str(companyName)]['PRC']))
+	priceList = priceList[numpy.logical_not(numpy.isnan(priceList))]
+	return numpy.mean(priceList)
+
+def findStdDev(companyName):
+	priceList = numpy.array(list(df[df['TICKER'] == str(companyName)]['PRC']))
+	priceList = priceList[numpy.logical_not(numpy.isnan(priceList))]
+	return numpy.std(priceList)
+
 percentileChangesArray = [0]*10
 
 for companyName in tsymList:
+	# get market cap, find number of changes, and also find standard deviation and mean return
     percentile = marketCapDict[companyName][1]
     numChanges = findChangeIndices(companyName)
-    print "%s: %d\t%d changes" % (companyName, percentile, numChanges)
+    mean = findMean(companyName)
+    stdDev = findStdDev((companyName))
+    print "%s: %d\t%d changes\t %f mean\t %f std" % (companyName, percentile, numChanges, mean, stdDev)
     percentileChangesArray[percentile-1] += numChanges
+    standardDeviationArray[percentile-1].append(stdDev)
+    meanReturnArray[percentile-1].append(mean)
 
 print percentileChangesArray
 print sum(percentileChangesArray)
+
+for i in range(10):
+	standardDeviationArray[i] = numpy.mean(standardDeviationArray[i])
+	meanReturnArray[i] = numpy.mean(meanReturnArray[i])
+
+print "standardDeviationArray"
+print standardDeviationArray
+print "meanReturnArray"
+print meanReturnArray
 
 # plot
 decileArray = []
@@ -111,9 +141,25 @@ for i in range(10):
 	decileArray.append('%d decile' % (i+1))
 
 x_pos = numpy.arange(len(decileArray))
+# graph of percentile changes by decile
+plt.figure(1)
 plt.bar(x_pos, percentileChangesArray)
 plt.xticks(x_pos, decileArray)
 plt.ylabel('Days with more than %f%% change in stock price' % (alpha*100))
+
+# graph of standard deviation by decile
+plt.figure(2)
+plt.subplot(2,1,1)
+plt.bar(x_pos, standardDeviationArray)
+plt.xticks(x_pos, decileArray)
+plt.ylabel('Standard Deviation')
+plt.title('Standard Deviation vs stock decile')
+plt.subplot(2,1,2)
+plt.plot(standardDeviationArray, meanReturnArray, 'ro')
+#plt.xticks(standardDeviationArray, decileArray)
+plt.ylabel('Mean Return')
+plt.title('Return vs Standard Deviation')
+
 plt.show()
 
 # for companyName in tsymList:
