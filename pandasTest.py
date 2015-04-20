@@ -20,9 +20,6 @@ print len(tsymList)
 
 f = open('pythonlist.txt', 'w+')
 
-# es = list(df[df['TICKER'] == 'ES']['PRC'])
-# print es
-
 companiesToSkip = ['WBA'] # companies that shouldn't be in this data
 for company in companiesToSkip:
 	tsymList.remove(company)
@@ -42,8 +39,6 @@ for i in range(len(tsymList)):
 	marketCapArray.append(marketShare)
 	marketCapDict[tsymList[i]] = [marketShare]
 
-# 	companyChanges[tsymList[i]] = []
-
 # print marketCapArray
 for i in range(1,11):
 	print "%d percentile: %f" % (i*10, numpy.percentile(marketCapArray, i*10))
@@ -54,10 +49,6 @@ for company in tsymList:
 	print '%s: %f\tpercentile:%d' % (company, marketCap, percentile)
 	marketCapDict[company].append(percentile)
 
-# print numpy.percentile(marketCapArray, 10)
-
-# # msft = df[df['TSYMBOL'] == 'MSFT']
-# # msftPrice = msft['PRC']
 alpha = 0.15  # percent change needed to be significant
 
 standardDeviationArray = []
@@ -72,12 +63,9 @@ def findChangeIndices(companyName):
 	
 	priceList = numpy.array(list(df[df['TICKER'] == str(companyName)]['PRC']))
 	priceList = priceList[~numpy.isnan(priceList)]
-	# print priceList
-	# print priceList[0]
-	# print priceList
+
 	changeList = []
 
-	# # msftChangeList = []
 	lastPrice = abs(priceList[0])
 	for i in range(len(priceList)):
 		absPrice = abs(priceList[i])
@@ -90,25 +78,21 @@ def findChangeIndices(companyName):
 
 	return len(changeList)
 
-	# #print changeList
-	# companyChanges[companyName] = changeList
-
-# # print msftChangeList
-
-# # findChangeIndices("EBAY")
-# # print companyChanges
-
-# print marketCapDict['AA']
-
 def findMean(companyName):
 	priceList = numpy.array(list(df[df['TICKER'] == str(companyName)]['PRC']))
 	priceList = priceList[numpy.logical_not(numpy.isnan(priceList))]
-	return numpy.mean(priceList)
+
+	# get the mean as a %
+	percentageMean = numpy.mean(priceList)#/float(priceList[0])
+	return percentageMean
 
 def findStdDev(companyName):
 	priceList = numpy.array(list(df[df['TICKER'] == str(companyName)]['PRC']))
 	priceList = priceList[numpy.logical_not(numpy.isnan(priceList))]
-	return numpy.std(priceList)
+
+	# get the stddev as a %
+	percentageStdDev = numpy.std(priceList)#/float(priceList[0])
+	return percentageStdDev
 
 percentileChangesArray = [0]*10
 
@@ -135,21 +119,69 @@ print standardDeviationArray
 print "meanReturnArray"
 print meanReturnArray
 
+
+countryRateChangeDict = {}
+def getCurrencyData():
+	global countryRateChangeDict
+	df2 = pandas.read_csv('basicCurrencyData.csv')
+
+	countries = numpy.delete(df2.columns.values, 0)
+	print countries
+	# test = df[countries[0]]
+	# test = list(test[np.logical_not(np.isnan(test))])
+	# print test
+
+	for country in countries:
+		fxRates = df2[country]
+		fxRates = list(fxRates[numpy.logical_not(numpy.isnan(fxRates))])
+
+		alpha = 0.05  # percent change needed to be significant
+
+		changeList = []
+
+		lastRate = abs(fxRates[0])
+		counter = 0
+		for rate in fxRates:
+			absRate = abs(rate)
+			# print "price:%f\t%r" % (absPrice, absPrice < (1-alpha)*lastPrice or absPrice > (1+alpha)*lastPrice)
+			if (absRate < (1-alpha)*lastRate or absRate > (1+alpha)*lastRate):
+				counter += 1
+				# if (country == 'china'):
+				# 	print "last:%s  new:%s" % (absRate, lastRate)
+			lastRate = absRate
+
+		countryRateChangeDict[country] = counter
+
+	print countryRateChangeDict
+	print sum(countryRateChangeDict.values())
+
+getCurrencyData()
+
 # plot
 decileArray = []
 for i in range(10):
 	decileArray.append('%d decile' % (i+1))
 
-x_pos = numpy.arange(len(decileArray))
 # graph of percentile changes by decile
 plt.figure(1)
+# add the currency data to it
+percentileChangesArray.append(sum(countryRateChangeDict.values()))
+decileArray.append("FX rates")
+x_pos = numpy.arange(len(decileArray))
+
+print len(x_pos)
+print len(percentileChangesArray)
+
 plt.bar(x_pos, percentileChangesArray)
 plt.xticks(x_pos, decileArray)
-plt.ylabel('Days with more than %f%% change in stock price' % (alpha*100))
+plt.ylabel('Days with more than %f%% change in price' % (alpha*100))
 
 # graph of standard deviation by decile
 plt.figure(2)
 plt.subplot(2,1,1)
+# add currency data to it
+standardDeviationArray.append(numpy.std(countryRateChangeDict.values()))
+meanReturnArray.append(numpy.mean(countryRateChangeDict.values()))
 plt.bar(x_pos, standardDeviationArray)
 plt.xticks(x_pos, decileArray)
 plt.ylabel('Standard Deviation')
@@ -161,16 +193,3 @@ plt.ylabel('Mean Return')
 plt.title('Return vs Standard Deviation')
 
 plt.show()
-
-# for companyName in tsymList:
-#     if(len(companyChanges[companyName]) > 10):
-#         print "company: %s\t times:%d" % (companyName,len(companyChanges[companyName]))
-
-# # findChangeIndices('AIG')
-
-# # print companyChanges
-# sumTerm = 0
-# for key in companyChanges:
-# 	sumTerm = sumTerm + len(companyChanges[key])
-
-# print "sum: %d" % sumTerm

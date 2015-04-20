@@ -1,0 +1,1829 @@
+ 
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	
+		<head><script type="text/javascript" src="/CFIDE/scripts/cfform.js"></script>
+<script type="text/javascript" src="/CFIDE/scripts/masks.js"></script>
+
+			<!--loggedIn=FALSE-->
+			
+			<meta charset="utf-8">
+			<meta http-equiv="X-UA-Compatible" content="IE=edge">
+			<meta name="viewport" content="width=device-width, initial-scale=1">
+			
+			<meta name="description" content="Wharton Research Data Services taps the most comprehensive sources of financial, accounting, economic, management, marketing, banking, and insurance data." />
+			<meta name="author" content="Wharton Research Data Services" />
+			<meta name="copyright" content="&copy; 1993-2015 Wharton Research Data Services" />
+			<meta name="robots" content="all" />
+			
+			<link rel="Shortcut Icon" href="/wrds/favicon.ico" />
+			<link rel="apple-touch-icon" href="/wrds/img/favicon.png" />
+			<link href="/wrds/css/jQueryUI-theme/jquery-ui-1.10.3.custom.min.css" rel="stylesheet" media="screen, projection" type="text/css" />
+			<link href="/wrds/css/tablesorter_style.css" rel="stylesheet" media="screen, projection" type="text/css" />
+			<!--[if gte IE 6]><link href="/wrds/css/ie6.css" rel="stylesheet" media="screen, projection" type="text/css" /><![endif]-->
+			
+			<!--[if gte IE 5.5]><![if lt IE 7]>
+				<style type="text/css">
+					#alImg1 img, #alImg2 img { filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0); }
+					#alImg1, #alImg2 { display: inline-block; }
+					#alImg1 { filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/wrds/img/logo_wharton.png'); }
+					#alImg2 { filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/wrds/img/logo_WRDS.png'); }
+				</style>
+			<![endif]><![endif]-->
+		
+			
+		<script type="text/javascript" src="/wrds/js/jquery-1.10.2.min.js"></script>
+		<script type="text/javascript" src="/wrds/js/jquery-migrate-1.2.1.min.js"></script>
+		<script type="text/javascript" src="/wrds/js/jquery-ui-1.10.3.custom.min.js"></script>
+		<script type="text/javascript" src="/wrds/js/jquery.tablesorter.js"></script>
+		<script type="text/javascript" src="/wrds/js/jquery.multiselect.js"></script>
+		<script type="text/javascript" src="/wrds/js/jquery.multiselect.filter.js"></script>
+	
+			
+			<link href="/wrds/css/default.css" rel="stylesheet" media="screen, projection" type="text/css" />
+		
+						
+
+            <link href="/wrds/css/jquery.multiselect.css" rel="stylesheet" type="text/css" />
+            <link href="/wrds/css/jquery.multiselect.filter.css" rel="stylesheet" type="text/css" />
+
+			<script type="text/javascript">
+				var $j = jQuery.noConflict();
+				$j(document).ready(function() {
+					{ /*Handles calling the method that checks the user's quota usage and makes it available to display to the user.
+						Note that this affects only the information displayed to the user; dissabling this call will not bypass the quota */
+						var quotaFill = "0";
+						if (quotaFill == -2) {
+							$j.post("https://wrds-web.wharton.upenn.edu/wrds/cfc/myWRDS.cfc", {method: "putQuotaOnUser", returnformat: "plain"});
+						};
+					}
+				});
+			</script>			
+			<title>Wharton Research Data Services</title>
+		
+<script type="text/javascript" language="JavaScript">
+	
+	var GoodUsername = "0123456789abcdefghijklmnopqrstuvwxyz";
+	var GoodClassSemester = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ#&()-_+[],. ";
+	var GoodName = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ()-',. ";
+	var GoodEmail = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@-_+'./";
+	var requiresDepartment = false;
+	var schoolsRequireDepartment = new Array();
+	schoolsRequireDepartment[0] = "454";
+	var userAuthLevel = 0;
+	
+	function addDOMLoadEvent(func) {
+	   if (!window.__load_events) {
+	      var init = function () {
+	          if (arguments.callee.done) return;
+	          arguments.callee.done = true;
+	          if (window.__load_timer) {
+	              clearInterval(window.__load_timer);
+	              window.__load_timer = null;
+	          }
+	          for (var i=0;i < window.__load_events.length;i++) {
+	              window.__load_events[i]();
+	          }
+	          window.__load_events = null;
+	      };
+	      if (document.addEventListener) {
+	          document.addEventListener("DOMContentLoaded", init, false);
+	      }
+	      if (/WebKit/i.test(navigator.userAgent)) {
+	          window.__load_timer = setInterval(function() {
+	              if (/loaded|complete/.test(document.readyState)) {
+	                  init();
+	              }
+	          }, 10);
+	      }
+	      window.onload = init;
+	      window.__load_events = [];
+	   }
+	   window.__load_events.push(func);
+	}
+	
+	addDOMLoadEvent(function(){
+		SwitchInstitution();
+	});
+	
+	function UpdateOneYearExpirationDate() {
+		var today = new Date();
+		var edate = new Date(today.getTime() + (1 * 365 * 86400000));
+		var year = edate.getYear();
+		if (year < 1000) year += 1900;
+		if (document.getElementById("user_expdate").value == ""){
+			document.getElementById("user_expdate").value=(edate.getMonth()+1) + "/" + edate.getDate() + "/" + (year+"");
+		}
+	}
+	
+	function UpdateTwoWeeksExpirationDate() {
+		var today = new Date();
+		var edate = new Date(today.getTime() + (15 * 86400000));
+		var year = edate.getYear();
+		if (year < 1000) year += 1900;
+		document.getElementById("user_expdate").value=(edate.getMonth()+1) + "/" + edate.getDate() + "/" + (year+"");
+	}
+	
+	function UpdateTwoYearsExpirationDate() {
+		var today = new Date();
+		var edate = new Date(today.getTime() + (2 * 365 * 86400000));
+		var year = edate.getYear();
+		if(year < 1000) year += 1900;
+		if (document.getElementById("user_expdate").value == ""){
+			document.getElementById("user_expdate").value=(edate.getMonth()+1) + "/" + edate.getDate() + "/" + (year+"");
+		}
+	}
+	
+	function checkExpirationDate() {
+		// Get today's date, and the correct year value.
+		var today = new Date();
+		
+		// Get a date object from the value in the end_date field.
+		var input_end_date = new Date(document.getElementById("user_expdate").value);
+		
+		// Also divide the end_date input into an array based on '/'.
+		var parts = document.getElementById("user_expdate").value.split('/');
+		if (parts.length != 3 || isNaN(parts[0]) || isNaN(parts[1]) || isNaN(parts[2])) {
+			return false;
+		}
+		
+		// Initialize the date we will use to compare with our end dates.
+		var date_to_check = new Date();
+		
+		// Since the Date() constructor won't always give us the right date, we must adjust it.
+		if (navigator.userAgent.toLowerCase().indexOf("chrome") != -1) {
+			//alert("Browser = Chrome");
+			//alert("input_end_date.getYear() = " + input_end_date.getYear());
+			// For Chrome, a year of 09 = 109, 109 = -1791, 1909 = 9, and 2009 = 109.
+			// So just add 1900 to whatever Chrome gives us as a year.
+			date_to_check = new Date(input_end_date.getYear()+1900, input_end_date.getMonth(), input_end_date.getDate());
+		} else if (navigator.userAgent.toLowerCase().indexOf("firefox") != -1) {
+			//alert("Browser = Firefox");
+			//alert("input_end_date.getYear() = " + input_end_date.getYear());
+			// For Firefox, a year of 09 = 9, 109 = -1791, 1909 = 9, and 2009 = 109.
+			if (input_end_date.getYear() < 100) {
+				if (parts[2] < 100) {
+					date_to_check = new Date(input_end_date.getYear()+2000, input_end_date.getMonth(), input_end_date.getDate());
+				} else {
+					date_to_check = new Date(input_end_date.getYear()+1900, input_end_date.getMonth(), input_end_date.getDate());
+				}
+			} else {
+				date_to_check = new Date(input_end_date.getYear()+1900, input_end_date.getMonth(), input_end_date.getDate());
+			}
+		} else if (navigator.userAgent.toLowerCase().indexOf("msie") != -1) {
+			var msie_version = navigator.userAgent.toLowerCase().substring(navigator.userAgent.toLowerCase().indexOf("msie") + 5,navigator.userAgent.toLowerCase().indexOf(".",navigator.userAgent.toLowerCase().indexOf("msie")));
+			if ((parseInt(msie_version) >= 9)) {
+				//alert("Browser = IE 9, 10, or 11");
+				//alert("input_end_date.getYear() = " + input_end_date.getYear());
+				// For IE 10, a year of 09 = 9, 109 = -1791, 1909 = 9, and 2009 = 109.
+				if (input_end_date.getYear() < 100) {
+					if (parts[2] < 100) {
+						date_to_check = new Date(input_end_date.getYear()+2000, input_end_date.getMonth(), input_end_date.getDate());
+					} else {
+						date_to_check = new Date(input_end_date.getYear()+1900, input_end_date.getMonth(), input_end_date.getDate());
+					}
+				} else {
+					date_to_check = new Date(input_end_date.getYear()+1900, input_end_date.getMonth(), input_end_date.getDate());
+				}
+			} else {
+				//alert("Browser = IE 8 or earlier");
+				//alert("input_end_date.getYear() = " + input_end_date.getYear());
+				// For IE 8 and earlier, a year of 09 = 9, 109 = 109, 1909 = 9, and 2009 = 2009.
+				if (input_end_date.getYear() < 100) {
+					if (parts[2] < 100) {
+						date_to_check = new Date(input_end_date.getYear()+2000, input_end_date.getMonth(), input_end_date.getDate());
+					} else {
+						date_to_check = new Date(input_end_date.getYear()+1900, input_end_date.getMonth(), input_end_date.getDate());
+					}
+				} else {
+					date_to_check = new Date(input_end_date.getYear(), input_end_date.getMonth(), input_end_date.getDate());
+				}
+			}
+		} else if (navigator.userAgent.toLowerCase().indexOf("safari") != -1) {
+			//alert("Browser = Safari");
+			//alert("input_end_date.getYear() = " + input_end_date.getYear());
+			// For Safari, a year of 09 = 109, 109 = -1791, 1909 = 9, and 2009 = 109.
+			// So just add 1900 to whatever Safari gives us as a year.
+			date_to_check = new Date(input_end_date.getYear()+1900, input_end_date.getMonth(), input_end_date.getDate());
+		} else {
+			//alert("Browser = Unknown");
+			// For other browsers, assume it is similar to Chrome and Safari, and just add 1900.
+			date_to_check = new Date(input_end_date.getYear()+1900, input_end_date.getMonth(), input_end_date.getDate());
+		}
+		
+		// Check the simple validity of the date.
+		if(!date_to_check || date_to_check == "NaN" || date_to_check == "Invalid Date" || today >= date_to_check ) {
+			//alert("'date_to_check' failed the simple validity check.");
+			return false;
+		}
+		
+		// Use a date one year from now for anyone except Masters (semester end) or Ph.D.s (up to 2 years).
+		var one_year_later = new Date(today.getTime() + (365 * 24 * 60 * 60 * 1000));
+		var two_years_later = new Date(today.getTime() + (2 * 365 * 24 * 60 * 60 * 1000));
+		
+		// Check the validity of the date by account type.
+		if (document.getElementById("user_type").value == "phd" || 
+			document.getElementById("user_type").value == "masters" || 
+			document.getElementById("user_type").value == "masters_noblackout"){
+			if(date_to_check.getTime() > two_years_later.getTime()) {
+				//alert("'date_to_check' failed the two-year validity check.");
+				return false;
+			}
+		} else if (date_to_check.getTime() > one_year_later.getTime()) {
+			//alert("'date_to_check' failed the one-year validity check.");
+			return false;
+		}
+		
+		// Make sure the right date is in the input box.
+		if (date_to_check.getYear() < 100) {
+			document.getElementById("user_expdate").value = (date_to_check.getMonth()+1) + "/" + date_to_check.getDate() + "/" + (date_to_check.getYear()+2000);
+		} else if (date_to_check.getYear() < 1000) {
+			document.getElementById("user_expdate").value = (date_to_check.getMonth()+1) + "/" + date_to_check.getDate() + "/" + (date_to_check.getYear()+1900);
+		} else {
+			document.getElementById("user_expdate").value = (date_to_check.getMonth()+1) + "/" + date_to_check.getDate() + "/" + date_to_check.getYear();
+		}
+		
+		return true;
+	}
+	
+	
+	// Updated 2013-10-01 to include a check for UPenn, so we can change Department to School field and 
+	// a required Reason for Account Request field to be emailed to wrds-support, per Beverley's request.
+	function SwitchInstitution() {
+		if (document.getElementById("schoolid")) {
+			
+			// Start with the assumption that the chosen institution does not require Department to be filled in.
+			requiresDepartment = false;
+			
+			// UPenn is a special case, needing School and the Reason fields.
+			if (document.getElementById("schoolid").value == 175) {
+				document.getElementById("user_department_dt").style.display = 'none';
+				document.getElementById("user_department_required_dt").style.display = 'none';
+				document.getElementById("user_school_dt").style.display = 'block';
+				document.getElementById("reason_dt").style.display = 'block';
+				document.getElementById("reason_dd").style.display = 'block';
+			} else {
+				
+				// See if the chosen schoolid is in the array schoolsRequireDepartment[] or not.
+				for (var i=0; i < schoolsRequireDepartment.length; i++) {
+					if (schoolsRequireDepartment[i] == document.getElementById("schoolid").value) {
+						requiresDepartment = true;
+						break;
+					}
+				}
+				// Display the correct label based on whether Department is required or optional.
+				if (requiresDepartment) {
+					document.getElementById("user_department_dt").style.display = 'none';
+					document.getElementById("user_department_required_dt").style.display = 'block';
+					document.getElementById("user_school_dt").style.display = 'none';
+					document.getElementById("reason_dt").style.display = 'none';
+					document.getElementById("reason_dd").style.display = 'none';
+				} else {
+					document.getElementById("user_department_dt").style.display = 'block';
+					document.getElementById("user_department_required_dt").style.display = 'none';
+					document.getElementById("user_school_dt").style.display = 'none';
+					document.getElementById("reason_dt").style.display = 'none';
+					document.getElementById("reason_dd").style.display = 'none';
+				}
+			}
+		}
+	}
+	
+	function SwitchType() {
+		// Empty & hide all the fields hidden by default in the registration page.
+		//document.getElementById("user_expdate").value = "";
+		if (document.getElementById("user_sponsor")) {
+			document.getElementById("user_sponsor").value = "";
+		}
+		if (document.getElementById("user_sponsor_email")) {
+			document.getElementById("user_sponsor_email").value = "";
+		}
+		if (document.getElementById("user_expdate_dt")) {
+			document.getElementById("user_expdate_dt").style.display = "none";
+			document.getElementById("user_expdate_dd").style.display = "none";
+			if (document.getElementById("user_type").value == "faculty" || 
+			document.getElementById("user_type").value == "staff") {
+				document.getElementById("user_expdate").value = '';
+			}
+		}
+		if (document.getElementById("fac_fname_dt")) {
+			document.getElementById("fac_fname").value = "";
+			document.getElementById("fac_fname_dt").style.display = "none";
+			document.getElementById("fac_fname_dd").style.display = "none";
+		}
+		if (document.getElementById("fac_lname_dt")) {
+			document.getElementById("fac_lname").value = "";
+			document.getElementById("fac_lname_dt").style.display = "none";
+			document.getElementById("fac_lname_dd").style.display = "none";
+		}
+		if (document.getElementById("fac_email_dt")) {
+			document.getElementById("fac_email").value = "";
+			document.getElementById("fac_email_dt").style.display = "none";
+			document.getElementById("fac_email_dd").style.display = "none";
+		}
+		if (document.getElementById("class_no_dt")) {
+			document.getElementById("class_no").value = "";
+			document.getElementById("class_no_dt").style.display = "none";
+			document.getElementById("class_no_dd").style.display = "none";
+		}
+		if (document.getElementById("semester_dt")) {
+			document.getElementById("semester").value = "";
+			document.getElementById("semester_dt").style.display = "none";
+			document.getElementById("semester_dd").style.display = "none";
+		}
+		// Show only the appropriate inputs.
+		if (document.getElementById("user_type").value != "faculty" && 
+			document.getElementById("user_type").value != "staff") {
+			// User selected Visiting Faculty, Ph.D., Research Assistant, Class, or Masters.
+			if (document.getElementById("user_expdate_dt")) {
+				document.getElementById("user_expdate_dt").style.display = "block";
+				document.getElementById("user_expdate_dd").style.display = "block";
+			}
+			// If user selected Visiting Faculty, set the default expiration date.
+			if (document.getElementById("user_type").value == "visitor") {
+				UpdateOneYearExpirationDate();
+				document.getElementById("user_expdate_label").innerHTML = "When Does Your Visit<br>End? (mm/dd/yyyy)";
+				if (document.getElementById("remove_expdate")) document.getElementById("remove_expdate").value = "no";
+			} else if (document.getElementById("user_type").value == "phd") {
+				UpdateTwoYearsExpirationDate();
+				if (document.getElementById("remove_expdate")) document.getElementById("remove_expdate").value = "no";
+				document.getElementById("user_expdate_label").innerHTML = "When Do You Expect Your<br>Degree? (mm/dd/yyyy)";
+			} else if (document.getElementById("user_type").value == "masters" || document.getElementById("user_type").value == "masters_noblackout") {
+				UpdateTwoYearsExpirationDate();
+				if (document.getElementById("remove_expdate")) document.getElementById("remove_expdate").value = "no";
+				document.getElementById("user_expdate_label").innerHTML = "When Do You Expect Your<br>Degree? (mm/dd/yyyy)";
+			} else if (document.getElementById("user_type").value == "ra") {
+				UpdateOneYearExpirationDate();
+				if (document.getElementById("remove_expdate")) document.getElementById("remove_expdate").value = "no";
+				if (document.getElementById("fac_fname_dt")) {
+					document.getElementById("fac_fname_dt").style.display = "block";
+					document.getElementById("fac_fname_dd").style.display = "block";
+					document.getElementById("fac_lname_dt").style.display = "block";
+					document.getElementById("fac_lname_dd").style.display = "block";
+					document.getElementById("fac_email_dt").style.display = "block";
+					document.getElementById("fac_email_dd").style.display = "block";
+					document.getElementById("user_expdate_label").innerHTML = "When Do You Finish Your<br>Research? (mm/dd/yyyy)";
+				}
+			} else if (document.getElementById("user_type").value == "class") {
+				UpdateOneYearExpirationDate();
+				if (document.getElementById("remove_expdate")) document.getElementById("remove_expdate").value = "no";
+				if (document.getElementById("class_no_dt")) {
+					document.getElementById("class_no_dt").style.display = "block";
+					document.getElementById("class_no_dd").style.display = "block";
+					document.getElementById("semester_dt").style.display = "block";
+					document.getElementById("semester_dd").style.display = "block";
+					document.getElementById("user_expdate_label").innerHTML = "When Does The Current<br>Class Finish? (mm/dd/yyyy)";
+				}
+			} else if (document.getElementById("user_type").value == "demo") {
+				UpdateTwoWeeksExpirationDate();
+				if (document.getElementById("remove_expdate")) document.getElementById("remove_expdate").value = "no";
+			} else {
+				if (document.getElementById("remove_expdate")) document.getElementById("remove_expdate").value = "yes";
+			}
+		} else if (document.getElementById("remove_expdate")) {
+			document.getElementById("remove_expdate").value = "yes";
+		}
+	}
+	
+	
+	function CheckForm() {
+		
+		// Do simple checks for the presence of necessary input values first.
+		
+		//alert("Checking form inputs...");
+		
+		if (document.getElementById("user_type").value == "") {
+			alert("Please select an account type.");
+			document.getElementById("user_type").focus();
+			return false;
+		}
+		if (document.getElementById("schoolid")) {
+			if (document.getElementById("schoolid").selectedIndex == 0) {
+				alert("Please select your institution.");
+				document.getElementById("schoolid").focus();
+				return false;
+			}
+		}
+		if (document.getElementById("fname")) {
+			if (document.getElementById("fname").value == "") {
+				alert("Please enter your first name.");
+				document.getElementById("fname").focus();
+				return false;
+			}
+		}
+		if (document.getElementById("lname")) {
+			if (document.getElementById("lname").value == "") {
+				alert("Please enter your last name.");
+				document.getElementById("lname").focus();
+				return false;
+			}
+		}
+		if (document.getElementById("user_email").value == "") {
+			alert("Please enter an e-mail address for this account.");
+			document.getElementById("user_email").focus();
+			return false;
+		}
+		if (document.getElementById("user_username_dt")) {
+			if (document.getElementById("user_username").value == "") {
+				alert("Please enter a username.");
+				document.getElementById("user_username").focus();
+				return false;
+			}
+		}
+		if (document.getElementById("schoolid")) {
+			if (document.getElementById("schoolid").value == 175) {
+				if (document.getElementById("user_department").value == "") {
+					alert("Please enter your School.");
+					document.getElementById("user_department").focus();
+					return false;
+				}
+				if (document.getElementById("reason").value == "") {
+					alert("Please enter the reason for your account request.");
+					document.getElementById("reason").focus();
+					return false;
+				}
+			} else if (requiresDepartment) {
+				if (document.getElementById("user_department").value == "") {
+					alert("Please enter your Department.");
+					document.getElementById("user_department").focus();
+					return false;
+				}
+			}
+		}
+		
+		// Validity checks.
+		
+		// Check fname, lname for validity.
+		if (document.getElementById("fname") && document.getElementById("lname")) {
+			for (i=0; i < document.getElementById("fname").value.length; i++) {
+				if ( GoodName.indexOf( document.getElementById("fname").value.charAt(i) ) == -1) {
+					alert("Please enter a valid first name.\n" + "Special characters such as `~!@#$%^&*_+={}[]\\|;:\"><?/ are not allowed.");
+					document.getElementById("fname").focus();
+					document.getElementById("fname").select();
+					return false;
+				}
+			}
+			for (i=0; i < document.getElementById("lname").value.length; i++) {
+				if ( GoodName.indexOf( document.getElementById("lname").value.charAt(i) ) == -1) {
+					alert("Please enter a valid last name.\n" + "Special characters such as `~!@#$%^&*_+={}[]\\|;:\"><?/ are not allowed.");
+					document.getElementById("lname").focus();
+					document.getElementById("lname").select();
+					return false;
+				}
+			}
+		}
+		
+		
+		// Check the email for validity.
+		if (document.getElementById("user_email").value.indexOf("@") < 1 || 
+		document.getElementById("user_email").value.indexOf(".") == -1 ) {
+			alert("Please enter a valid school email address.\n" + "Example: yourname@yourschool.edu");
+			document.getElementById("user_email").focus();
+			document.getElementById("user_email").select();
+			return false;
+		}
+		for (i=0; i < document.getElementById("user_email").value.length; i++) {
+			if ( GoodEmail.indexOf( document.getElementById("user_email").value.charAt(i) ) == -1) {
+				alert("Please enter a valid school email address.\n" + "Special characters such as `~!#$%^&*()=[]{}\\|;:\",>< are not allowed.");
+				document.getElementById("user_email").focus();
+				document.getElementById("user_email").select();
+				return false;
+			}
+		}
+		
+		
+		// Check the user_name for validity.
+		if (document.getElementById("user_username_dt")) {
+			if (document.getElementById("user_username").value.length < 3) {
+				alert("Please enter a valid username at least 3 characters long.");
+				document.getElementById("user_username").focus();
+				document.getElementById("user_username").select();
+				return false;
+			} else if ( !(isNaN(document.getElementById("user_username").value.charAt(0))) ) {
+				alert("Please enter a username that starts with a lowercase letter.\n" +
+					"Numbers may be used only after the first character.");
+				document.getElementById("user_username").focus();
+				document.getElementById("user_username").select();
+				return false;
+			}
+			for (i=0; i < document.getElementById("user_username").value.length; i++) {
+				if ( GoodUsername.indexOf( document.getElementById("user_username").value.charAt(i) ) == -1) {
+					alert("Please enter a valid username at least 3 characters long containing only lowercase letters and numbers.\n" +
+						"Uppercase letters and special characters such as ~`!@#$%^&*()-_+=[]{}\\|/;:\",.><? or space are not allowed.");
+					document.getElementById("user_username").focus();
+					document.getElementById("user_username").select();
+					return false;
+				}
+			}
+		}
+		
+		
+		// Check the value of the user_expdate, if needed.
+		if (document.getElementById("user_type").value == "class" || 
+			document.getElementById("user_type").value == "demo" || 
+			document.getElementById("user_type").value == "masters" || 
+			document.getElementById("user_type").value == "masters_noblackout" || 
+			document.getElementById("user_type").value == "phd" || 
+			document.getElementById("user_type").value == "ra" || 
+			document.getElementById("user_type").value == "visitor") {
+			// For these types, the user can not remove the expdate altogether.
+			if (document.getElementById("remove_expdate")) document.getElementById("remove_expdate").value = "no";
+			// Check the date itself for validity.
+			if (document.getElementById("user_expdate").value == "") {
+				alert("Please enter the expiration date for this account.");
+				document.getElementById("user_expdate").focus();
+				return false;
+			} else if (!checkExpirationDate() && userAuthLevel != 3) {
+				if (document.getElementById("user_type").value == "phd" || 
+					document.getElementById("user_type").value == "masters" || 
+					document.getElementById("user_type").value == "masters_noblackout") {
+					alert ("The expiration date is invalid.\nPlease enter a date using the mm/dd/yy(yy) format.\nThe date must be later than today, but cannot exceed 2 years from today.");
+				} else {
+					alert ("The expiration date is invalid.\nPlease enter a date using the mm/dd/yy(yy) format.\nThe date must be later than today, but cannot exceed 1 year from today.");
+				}
+				document.getElementById("user_expdate").focus();
+				document.getElementById("user_expdate").select();
+				return false;
+			}
+		}
+		
+		
+		// Check the fac_fname, fac_lname, and fac_email, or user_sponsor and user_sponsor_email, if needed.
+		if (document.getElementById("fac_email_dt")) {
+			if (document.getElementById("user_type").value == "ra") {
+				if (document.getElementById("fac_fname").value == "") {
+					alert("Please enter the faculty sponsor's first name.");
+					document.getElementById("fac_fname").focus();
+					return false;
+				}
+				for (i=0; i < document.getElementById("fac_fname").value.length; i++) {
+					if ( GoodName.indexOf( document.getElementById("fac_fname").value.charAt(i) ) == -1) {
+						alert("Please enter a valid first name for the faculty sponsor.\n" + "Special characters such as `~!@#$%^&*_+={}[]\\|;:\"><?/ are not allowed.");
+						document.getElementById("fac_fname").focus();
+						document.getElementById("fac_fname").select();
+						return false;
+					}
+				}
+				if (document.getElementById("fac_lname").value == "") {
+					alert("Please enter the faculty sponsor's last name.");
+					document.getElementById("fac_lname").focus();
+					return false;
+				}
+				for (i=0; i < document.getElementById("fac_lname").value.length; i++) {
+					if ( GoodName.indexOf( document.getElementById("fac_lname").value.charAt(i) ) == -1) {
+						alert("Please enter a valid last name for the faculty sponsor.\n" + "Special characters such as `~!@#$%^&*_+={}[]\\|;:\"><?/ are not allowed.");
+						document.getElementById("fac_lname").focus();
+						document.getElementById("fac_lname").select();
+						return false;
+					}
+				}
+				if (document.getElementById("fac_email").value.indexOf("@") < 1 || 
+				document.getElementById("fac_email").value.indexOf(".") == -1 || 
+				document.getElementById("fac_email").value.indexOf(".com") > document.getElementById("fac_email").value.indexOf("@") || 
+				document.getElementById("fac_email").value.indexOf(".net") > document.getElementById("fac_email").value.indexOf("@") ) {
+					alert("Please enter the faculty sponsor's valid institutional email address.\n" + "Example: facultyname@yourschool.edu");
+					document.getElementById("fac_email").focus();
+					document.getElementById("fac_email").select();
+					return false;
+				}
+				for (i=0; i < document.getElementById("fac_email").value.length; i++) {
+					if ( GoodEmail.indexOf( document.getElementById("fac_email").value.charAt(i) ) == -1) {
+						alert("Please enter the faculty sponsor's valid institutional email address.\n" + "Special characters such as `~!#$%^&*()=[]{}\\|;:\",>< are not allowed.");
+						document.getElementById("fac_email").focus();
+						document.getElementById("fac_email").select();
+						return false;
+					}
+				}
+			}
+		} else if (document.getElementById("user_sponsor")) {
+			if (document.getElementById("user_type").value == "ra") {
+				if (document.getElementById("user_sponsor").value == "") {
+					alert("Please enter the faculty sponsor's name.");
+					document.getElementById("user_sponsor").focus();
+					return false;
+				}
+				for (i=0; i < document.getElementById("user_sponsor").value.length; i++) {
+					if ( GoodName.indexOf( document.getElementById("user_sponsor").value.charAt(i) ) == -1) {
+						alert("Please enter a valid name for the faculty sponsor.\n" + "Special characters such as `~!@#$%^&*_+={}[]\\|;:\"><?/ are not allowed.");
+						document.getElementById("user_sponsor").focus();
+						document.getElementById("user_sponsor").select();
+						return false;
+					}
+				}
+				if (document.getElementById("user_sponsor_email").value.indexOf("@") < 1 || 
+				document.getElementById("user_sponsor_email").value.indexOf(".") == -1 || 
+				document.getElementById("user_sponsor_email").value.indexOf(".com") > document.getElementById("user_sponsor_email").value.indexOf("@") || 
+				document.getElementById("user_sponsor_email").value.indexOf(".net") > document.getElementById("user_sponsor_email").value.indexOf("@") ) {
+					alert("Please enter the faculty sponsor's valid institutional email address.\n" + "Example: facultyname@yourschool.edu");
+					document.getElementById("user_sponsor_email").focus();
+					document.getElementById("user_sponsor_email").select();
+					return false;
+				}
+				for (i=0; i < document.getElementById("user_sponsor_email").value.length; i++) {
+					if ( GoodEmail.indexOf( document.getElementById("user_sponsor_email").value.charAt(i) ) == -1) {
+						alert("Please enter the faculty sponsor's valid institutional email address.\n" + "Special characters such as `~!#$%^&*()=[]{}\\|;:\",>< are not allowed.");
+						document.getElementById("user_sponsor_email").focus();
+						document.getElementById("user_sponsor_email").select();
+						return false;
+					}
+				}
+			}
+		}		
+		
+		// Check the value of the class_no, if needed.
+		if (document.getElementById("user_type").value == "class" && document.getElementById("class_no")) {
+			if (document.getElementById("class_no").value == "") {
+				alert("Please enter the number of the class.");
+				document.getElementById("class_no").focus();
+				return false;
+			}
+			for (i=0; i < document.getElementById("class_no").value.length; i++) {
+				if ( GoodClassSemester.indexOf( document.getElementById("class_no").value.charAt(i) ) == -1) {
+					alert("Special characters such as `~!@$%^*={}|\\:;\"'><?/ are not allowed for Course Code.");
+					document.getElementById("class_no").focus();
+					document.getElementById("class_no").select();
+					return false;
+				}
+			}
+		}
+		
+		// Check the value of the semester, if needed.
+		if (document.getElementById("user_type").value == "class" && document.getElementById("semester")) {
+			if (document.getElementById("semester").value == "") {
+				alert("Please enter the semester or quarter of the class.");
+				document.getElementById("semester").focus();
+				return false;
+			}
+			for (i=0; i < document.getElementById("semester").value.length; i++) {
+				if ( GoodClassSemester.indexOf( document.getElementById("semester").value.charAt(i) ) == -1) {
+					alert("Special characters such as `~!@$%^*={}|\\:;\"'><?/ are not allowed for Semester/Quarter.");
+					document.getElementById("semester").focus();
+					document.getElementById("semester").select();
+					return false;
+				}
+			}
+		}
+		
+		return true;
+		
+	}
+	
+</script>
+<script type="text/javascript">
+<!--
+    _CF_checkuser_info_form = function(_CF_this)
+    {
+        //reset on submit
+        _CF_error_exists = false;
+        _CF_error_messages = new Array();
+        _CF_error_fields = new Object();
+        _CF_FirstErrorField = null;
+
+        //form element user_email 'EMAIL' validation checks
+        if (!_CF_checkEmail(_CF_this['user_email'].value, false))
+        {
+            _CF_onError(_CF_this, "user_email", _CF_this['user_email'].value, "There is an error in your email address input.\nSpecial characters such as `~!#$%^&*()={}[]\\|;:\",></? are not allowed.");
+            _CF_error_exists = true;
+        }
+
+
+        //display error messages and return success
+        if( _CF_error_exists )
+        {
+            if( _CF_error_messages.length > 0 )
+            {
+                // show alert() message
+                _CF_onErrorAlert(_CF_error_messages);
+                // set focus to first form error, if the field supports js focus().
+                if( _CF_this[_CF_FirstErrorField].type == "text" )
+                { _CF_this[_CF_FirstErrorField].focus(); }
+
+            }
+            return false;
+        }else {
+            // run userdefined onSubmit javascript. 
+            return CheckForm();
+            return true;
+        }
+    }
+//-->
+</script>
+
+	<script type="text/javascript" language="JavaScript">
+		addDOMLoadEvent(function(){
+			if (document.getElementById("username")) document.getElementById("username").focus();
+		});
+	</script>
+	</head>
+		
+		
+
+		<body class="home">
+			
+				<div id="header-wrap">		        
+					<div id="header">
+						<div id="logos">
+							
+								<a href="https://wrds-web.wharton.upenn.edu/wrds/" title="Wharton: University of Pennsylvania"><div id="alImg1" style="width:205px;height:28px;float:left;"><img src="/wrds/img/logo_wharton.png" width="112" height="28" border="0" alt="Wharton: University of Pennsylvania"></div></a>
+								<a href="https://wrds-web.wharton.upenn.edu/wrds/" title="WRDS: Wharton Research Data Services: We handle the data management, you concentrate on research. "><span id="alImg2" style="width:439px;height:40px;float:center;"><img src="/wrds/img/logo_WRDS.png" width="439" height="40" border="0" alt="WRDS: Wharton Research Data Services: We handle the data management, you concentrate on research."></span></a>
+							
+						</div>
+						
+<ul id="nav">
+	<li class="home"><a href="https://wrds-web.wharton.upenn.edu/wrds/" title="Home">HOME</a></li>
+	<li class="news"><a href="https://wrds-web.wharton.upenn.edu/wrds/news" title="News">NEWS</a></li>
+	<li class="about"><a href="https://wrds-web.wharton.upenn.edu/wrds/about/" title="About">ABOUT</a></li>
+	<li class="demo"><a href="https://wrds-web.wharton.upenn.edu/wrds/demo/" title="Demo">DEMO</a></li>
+</ul>
+
+					<!-- end #header -->
+					</div>
+				<!-- end #header-wrap -->
+				</div>
+			
+			<div id="container">
+		
+	
+
+
+
+
+
+<div id="breadcrumbs">
+
+
+				<a href="/wrds/index.cfm">Home</a> &rarr;
+			Wharton Research Data Services 
+
+</div>
+
+
+
+
+
+
+<div id="main">
+	
+		<script type="text/javascript">
+		</script>
+		<noscript>
+			<h2>Please Note: JavaScript Test Failed</h2>
+			<p>The new WRDS web site has many features which require JavaScript to be enabled. To enable JavaScript, please see the instructions below for your browser.</p>
+			<a href="http://www.mozilla.org/firefox/" target="_blank"><h3>Mozilla Firefox</h3></a>
+			<ul>
+			  <li>Select <b>Tools</b> | <b>Options...</b> from the main menu.</li>
+			  <li>Select <b>Content </b>button from the top row of options.</li>
+			  <li>Select &quot;Enable JavaScript.&quot;
+			</ul>
+			<h3>Internet Explorer</h3>
+			<ul>
+			  <li>Select <b>Tools</b> | <b>Internet Options</b> menu item from the main menu.</li>
+			  <li>Change to the <b>Security</b> tab at the top of the Internet Options window that pops up.</li>
+			  <li>From the list of zones at the top of the Security options select the internet icon.</li>
+			  <li>Select the button near the bottom that reads <b>Custom Level</b>.</li>
+			  <li>In the new window that pops up, scroll down to the item that reads <b>Active Scripting</b>. </li>
+			  <li>Select the option marked <b>Enable</b>.</li>
+			</ul>
+			<h3>Safari</h3>
+			<ul>
+			  <li>Select <b>Preferences</b> from the <strong>Safari</strong> menu.</li>
+			  <li>Select <strong>Security</strong> tab at the top. </li>
+			  <li>Make sure &quot;Enable JavaScript&quot; is checked.</li>
+			</ul>
+			<br />
+		</noscript>
+	
+		<h2>Welcome to WRDS!</h2>
+	
+		<p>Wharton Research Data Services (WRDS) is a web-based business data research service from The Wharton School at the University of Pennsylvania. Developed in 1993 to support faculty research at Wharton, the service has evolved to become a common tool for research for over 290 institutions around the world.</p>
+		<p>WRDS is the de facto standard for business data, providing researchers worldwide with instant access to financial, economic, and marketing data through a uniform, web-based interface. This hosted data service has become the locus for quantitative data research and is recognized by the academic and financial research community around the world as the leading business intelligence tool.</p>
+		<p>WRDS provides access to COMPUSTAT, CRSP, IBES, NYSE-TAQ, Bureau van Dijk, Global Insight, OptionMetrics and other important business research databases.</p>
+		<p>For additional information, please see the About section.</p>
+		<p><a href="http://www.facebook.com/pages/Philadelphia-PA/Wharton-Research-Data-Services-WRDS/97638911013" target="_blank">Connect with us on Facebook!</a>&nbsp;<a href="http://www.facebook.com/pages/Philadelphia-PA/Wharton-Research-Data-Services-WRDS/97638911013" target="_blank"><img alt="" border="0" src="/wrds/img/facebook_logo.png" /></a></p> 
+	
+	<div id="subcontainer">
+		
+	
+	<h1>WRDS News</h1>
+	
+	
+	
+	<div class="subgroup1">
+	
+	
+		<h3>March 9, 2015</h3>
+		
+
+		
+		<dl class="alt"><dt><a href="/wrds/news/index.cfm?display=read&news_id=520" title="WRDS sponsors Outstanding Paper Award at the Mid-Atlantic Regional Conference in Finance, March 13">WRDS sponsors Outstanding Paper Award at the Mid-Atlantic Re...</a></dt></dl>
+	
+		<h3>February 25, 2015</h3>
+		
+
+		
+		<dl class="alt"><dt><a href="/wrds/news/index.cfm?display=read&news_id=518" title="WRDS exhibiting at The Trade Show West Conference, March 5">WRDS exhibiting at The Trade Show West Conference, March 5</a></dt></dl>
+	
+		<h3>February 10, 2015</h3>
+		
+
+		
+		<dl class="alt"><dt><a href="/wrds/news/index.cfm?display=read&news_id=514" title="WRDS Best Paper Award Highlights Analyst Influence on Corporate Policies">WRDS Best Paper Award Highlights Analyst Influence on Corpor...</a></dt></dl>
+	
+		<h3>January 29, 2015</h3>
+		
+
+		
+		<dl class="alt"><dt><a href="/wrds/news/index.cfm?display=read&news_id=513" title="Visit WRDS at these upcoming 2015 Conferences">Visit WRDS at these upcoming 2015 Conferences</a></dt></dl>
+	
+		<h3>December 9, 2014</h3>
+		
+
+		
+		<dl class="alt"><dt><a href="/wrds/news/index.cfm?display=read&news_id=507" title="Louisiana State University wins FREE 1 yr subscription to the WRDS SEC Analytics Suite">Louisiana State University wins FREE 1 yr subscription to th...</a></dt></dl>
+	
+	<!-- end #subgroup1 -->
+	</div>
+	
+	<div class="subgroup2">
+		
+		<h3>December 5, 2014</h3>
+		
+
+		
+		<dl class="alt"><dt><a href="/wrds/news/index.cfm?display=read&news_id=506" title="WRDS Research Director awarded Jack Treynor Prize by the Q-Group">WRDS Research Director awarded Jack Treynor Prize by the Q-G...</a></dt></dl>
+	
+		<h3>November 17, 2014</h3>
+		
+
+		
+		<dl class="alt"><dt><a href="/wrds/news/index.cfm?display=read&news_id=504" title="Visit WRDS at the SFA and Enter to Win!">Visit WRDS at the SFA and Enter to Win!</a></dt></dl>
+	
+		<h3>November 6, 2014</h3>
+		
+
+		
+		<dl class="alt"><dt><a href="/wrds/news/index.cfm?display=read&news_id=502" title="WRDS Best Paper Awarded for Research on Financial Model Disagreement and Impact on Markets">WRDS Best Paper Awarded for Research on Financial Model Disa...</a></dt></dl>
+	
+		<h3>November 3, 2014</h3>
+		
+
+		
+		<dl class="alt"><dt><a href="/wrds/news/index.cfm?display=read&news_id=501" title="Markit's Securities Finance and Credit Indices data now available">Markit's Securities Finance and Credit Indices data now avai...</a></dt></dl>
+	
+		<h3>October 24, 2014</h3>
+		
+
+		
+		<dl class="alt"><dt><a href="/wrds/news/index.cfm?display=read&news_id=498" title="Texas Tech PhD student wins a FREE 1 yr subscription to WRDS SEC Analytics Suite and Markit data for his University ">Texas Tech PhD student wins a FREE 1 yr subscription to WRDS...</a></dt></dl>
+	
+	
+		
+		<p class="more"><a href="/wrds/news/index.cfm?display=wrds">Read more WRDS news &rarr;</a></p>
+		
+	<!-- end #subgroup2 -->
+	</div>
+	
+
+	
+	<!-- end #subcontainer -->
+	</div>
+	
+<!-- end #main -->
+</div>
+
+<div id="subcol">
+	
+
+
+<h2>Sign In</h2>
+<dl class="tabset sign-in">
+	
+	<dt class="active">Sign In</dt>
+	<dd class="bucket">
+			
+	<form action="https://wrds-web.wharton.upenn.edu/wrds/index.cfm?" method="post">
+		<dl>
+			<dt><label for="username">Username</label></dt>
+				<dd><input type="text" id="username" name="username" maxlength="50" /></dd>
+	
+			<dt><label for="password">Password</label></dt>
+				<dd>
+					<input type="password" id="password" name="password" maxlength="50" />
+					<p><a href="/wrds/?register=1"><b>Register for a WRDS Account</b></a></p>
+					<p><a href="/wrds/registration/passwordProblems.cfm" title="Forgot your username/password?">Forgot your username/password?</a></p>
+					<p><a href="https://wrds-web.wharton.upenn.edu/wrds/transfer/index.cfm" title="Request Account Transfer">Request Account Transfer</a></p>
+				</dd>
+	
+				<dd class="submit"><input type="image" name="signin" value="Sign In" alt="Sign In" src="/wrds/img/btn_sign_in.gif" /></dd>
+		</dl>
+		<p><a href="/wrds/about/external_support_request.cfm">Have a question? Contact Us</a></p>
+	</form>
+	
+	</dd>
+	
+	<dt class="dormant sign-in">Register</dt>
+	<dd class="bucket">
+		You must have an account to use <acronym title="Wharton Research Data Services">WRDS</acronym>. Please use the form below to request one. If you already have one and want to transfer it, <a href="https://wrds-web.wharton.upenn.edu/wrds/transfer/index.cfm">click here</a>.<br />
+		
+		<form name="user_info_form" id="user_info_form" action="/wrds/registration/userInputCheck.cfm" method="post" onsubmit="return _CF_checkuser_info_form(this)">
+			<input type="hidden" name="vp" value="0">
+			<dl>
+				<dt id="schoolid_dt"><label for="schoolid">Institution</label></dt>
+				<dd id="schoolid_dd">
+					
+						<select style="width: 270px" id="schoolid" name="schoolid" onChange="SwitchInstitution()" >
+							<option value="0">-- Select Your Institution --</option>
+						
+							
+								<option value="149">Bank of Canada</option>
+							
+								<option value="139">Board of Governors of the Federal Reserve System</option>
+							
+								<option value="430">Federal Deposit Insurance Corporation</option>
+							
+								<option value="211">Federal Reserve Bank of Atlanta</option>
+							
+								<option value="233">Federal Reserve Bank of Boston - CRSP Only</option>
+							
+								<option value="156">Federal Reserve Bank of Chicago</option>
+							
+								<option value="108">Federal Reserve Bank of New York</option>
+							
+								<option value="433">Federal Reserve Bank of Philadelphia</option>
+							
+								<option value="541">Federal Reserve Bank of Richmond</option>
+							
+								<option value="610">International Monetary Fund</option>
+							
+								<option value="114">Securities and Exchange Commission</option>
+							
+								<option value="485">US Department of the Treasury - Office of Financial Research</option>
+							
+								<option value="350">US Department of the Treasury - Office of the Comptroller of the Currency</option>
+							
+								<option value="535">US Patent and Trademark Office</option>
+							
+								<option value="288">Aalto University (formerly Helsinki School of Economics)</option>
+							
+								<option value="234">Aarhus University</option>
+							
+								<option value="598">Alfaisal University</option>
+							
+								<option value="182">American University</option>
+							
+								<option value="180">American University of Beirut</option>
+							
+								<option value="68">Arizona State University</option>
+							
+								<option value="201">Auburn University</option>
+							
+								<option value="142">Australian National University</option>
+							
+								<option value="552">BI Norwegian Business School</option>
+							
+								<option value="254">Babson College</option>
+							
+								<option value="11">Baruch College</option>
+							
+								<option value="118">Baylor University</option>
+							
+								<option value="296">Bentley University</option>
+							
+								<option value="208">Binghamton University</option>
+							
+								<option value="289">Bocconi University</option>
+							
+								<option value="15">Boston College</option>
+							
+								<option value="23">Boston University</option>
+							
+								<option value="618">Bowdoin College</option>
+							
+								<option value="299">Brandeis University</option>
+							
+								<option value="42">Brigham Young University</option>
+							
+								<option value="200">Brock University</option>
+							
+								<option value="363">California Polytechnic State University, San Luis Obispo</option>
+							
+								<option value="250">California State Polytechnic University, Pomona</option>
+							
+								<option value="302">California State University, East Bay</option>
+							
+								<option value="176">California State University, Fullerton</option>
+							
+								<option value="220">California State University, Long Beach</option>
+							
+								<option value="452">California State University, Los Angeles</option>
+							
+								<option value="553">California State University, Northridge</option>
+							
+								<option value="554">California State University, Sacramento</option>
+							
+								<option value="419">Cardiff University</option>
+							
+								<option value="18">Carnegie Mellon University</option>
+							
+								<option value="28">Case Western Reserve University</option>
+							
+								<option value="555">Central Michigan University</option>
+							
+								<option value="523">Cheung Kong Graduate School of Business</option>
+							
+								<option value="119">Chinese University of Hong Kong</option>
+							
+								<option value="602">Chulalongkorn University</option>
+							
+								<option value="227">City University London</option>
+							
+								<option value="157">City University of Hong Kong</option>
+							
+								<option value="123">Claremont McKenna College</option>
+							
+								<option value="609">Clark University</option>
+							
+								<option value="206">Clemson University</option>
+							
+								<option value="46">College of William & Mary</option>
+							
+								<option value="450">Colorado State University</option>
+							
+								<option value="3">Columbia University</option>
+							
+								<option value="316">Concordia University</option>
+							
+								<option value="414">Copenhagen Business School</option>
+							
+								<option value="115">Cornell University</option>
+							
+								<option value="464">Curtin University</option>
+							
+								<option value="191">Dartmouth College</option>
+							
+								<option value="257">DePaul University</option>
+							
+								<option value="177">Drexel University</option>
+							
+								<option value="7">Duke University</option>
+							
+								<option value="228">Durham University</option>
+							
+								<option value="367">EDHEC Business School</option>
+							
+								<option value="627">ESADE Business School</option>
+							
+								<option value="588">ESCP Europe</option>
+							
+								<option value="274">ESSEC Business School</option>
+							
+								<option value="416">East Carolina University</option>
+							
+								<option value="304">Ecole Polytechnique Federale de Lausanne</option>
+							
+								<option value="548">Elon University</option>
+							
+								<option value="76">Emory University</option>
+							
+								<option value="131">Erasmus University</option>
+							
+								<option value="243">Florida Atlantic University</option>
+							
+								<option value="58">Florida International University</option>
+							
+								<option value="199">Florida State University</option>
+							
+								<option value="74">Fordham University</option>
+							
+								<option value="491">Frankfurt School of Finance &amp; Management</option>
+							
+								<option value="301">Fudan University</option>
+							
+								<option value="213">George Mason University</option>
+							
+								<option value="137">George Washington University</option>
+							
+								<option value="56">Georgetown University</option>
+							
+								<option value="70">Georgia Institute of Technology</option>
+							
+								<option value="530">Georgia Southern University</option>
+							
+								<option value="71">Georgia State University</option>
+							
+								<option value="300">Goethe University Frankfurt</option>
+							
+								<option value="209">HEC</option>
+							
+								<option value="366">HEC Montreal</option>
+							
+								<option value="572">Hang Seng Management College</option>
+							
+								<option value="20">Harvard University</option>
+							
+								<option value="628">Hofstra University</option>
+							
+								<option value="246">Hong Kong Polytechnic University</option>
+							
+								<option value="120">Hong Kong University of Science & Technology</option>
+							
+								<option value="218">Hunter College</option>
+							
+								<option value="75">IESE Business School</option>
+							
+								<option value="61">INSEAD</option>
+							
+								<option value="442">Illinois Institute of Technology</option>
+							
+								<option value="78">Imperial College</option>
+							
+								<option value="613">Indian Institute of Management - Bangalore</option>
+							
+								<option value="483">Indian Institute of Management - Calcutta</option>
+							
+								<option value="192">Indian School of Business</option>
+							
+								<option value="49">Indiana University</option>
+							
+								<option value="589">Instituto Tecnologico Autonomo de Mexico</option>
+							
+								<option value="320">Instituto de Empresa</option>
+							
+								<option value="355">Iowa State University</option>
+							
+								<option value="231">James Madison University</option>
+							
+								<option value="143">Johns Hopkins University</option>
+							
+								<option value="469">K.U. Leuven</option>
+							
+								<option value="290">Kansas State University</option>
+							
+								<option value="318">Kennesaw State University</option>
+							
+								<option value="473">Kent State University</option>
+							
+								<option value="566">King Saud University</option>
+							
+								<option value="31">Koc University</option>
+							
+								<option value="229">Korea Advanced Institute of Science & Technology</option>
+							
+								<option value="236">Korea University Business School</option>
+							
+								<option value="534">La Trobe University</option>
+							
+								<option value="116">Lancaster University</option>
+							
+								<option value="580">Lebanese American University</option>
+							
+								<option value="277">Lehigh University</option>
+							
+								<option value="462">Lingnan University</option>
+							
+								<option value="25">London Business School</option>
+							
+								<option value="140">London School of Economics</option>
+							
+								<option value="150">Louisiana State University</option>
+							
+								<option value="614">Loyola Marymount University</option>
+							
+								<option value="330">Loyola University Chicago</option>
+							
+								<option value="145">Loyola University Maryland</option>
+							
+								<option value="605">Ludwig Maximilians Universitat Munich</option>
+							
+								<option value="242">Maastricht University</option>
+							
+								<option value="241">Macquarie University</option>
+							
+								<option value="266">Marquette University</option>
+							
+								<option value="26">Massachusetts Institute of Technology</option>
+							
+								<option value="63">McGill University</option>
+							
+								<option value="183">McMaster University</option>
+							
+								<option value="188">Miami University of Ohio</option>
+							
+								<option value="55">Michigan State University</option>
+							
+								<option value="418">Mississippi State University</option>
+							
+								<option value="264">Monash University</option>
+							
+								<option value="428">Monash University Sunway Campus</option>
+							
+								<option value="323">Montclair State University</option>
+							
+								<option value="285">Morgan State University</option>
+							
+								<option value="194">NHH Norwegian School of Economics</option>
+							
+								<option value="174">Nanyang Technological University</option>
+							
+								<option value="364">National Cheng Chi University</option>
+							
+								<option value="486">National Cheng Kung University</option>
+							
+								<option value="482">National Chiao Tung University</option>
+							
+								<option value="164">National Taiwan University</option>
+							
+								<option value="54">National University of Singapore</option>
+							
+								<option value="516">Naval Postgraduate School</option>
+							
+								<option value="608">Nazarbayev University</option>
+							
+								<option value="617">Net Digital Solutions/Department of Labor</option>
+							
+								<option value="47">New York University</option>
+							
+								<option value="606">Newcastle University</option>
+							
+								<option value="69">North Carolina State University</option>
+							
+								<option value="271">Northeastern University</option>
+							
+								<option value="297">Northern Illinois University</option>
+							
+								<option value="10">Northwestern University</option>
+							
+								<option value="165">Nova Southeastern University</option>
+							
+								<option value="24">Ohio State University</option>
+							
+								<option value="623">Ohio University</option>
+							
+								<option value="215">Oklahoma State University</option>
+							
+								<option value="479">Oregon State University</option>
+							
+								<option value="358">Ozyegin University</option>
+							
+								<option value="39">Pace University</option>
+							
+								<option value="445">Peking University HSBC Business School</option>
+							
+								<option value="36">Pennsylvania State University</option>
+							
+								<option value="166">Pepperdine University</option>
+							
+								<option value="561">Portland State University</option>
+							
+								<option value="38">Princeton University</option>
+							
+								<option value="6">Purdue University</option>
+							
+								<option value="427">Queen Mary University of London</option>
+							
+								<option value="202">Queen's University</option>
+							
+								<option value="532">Queensland University of Technology</option>
+							
+								<option value="624">Renmin University of China</option>
+							
+								<option value="48">Rice University</option>
+							
+								<option value="303">Rochester Institute of Technology</option>
+							
+								<option value="126">Rutgers, The State University of New Jersey</option>
+							
+								<option value="527">Ryerson University</option>
+							
+								<option value="460">SKEMA Business School</option>
+							
+								<option value="270">Sabanci University</option>
+							
+								<option value="222">Saint Louis University</option>
+							
+								<option value="565">Saint Mary's University</option>
+							
+								<option value="362">San Diego State University</option>
+							
+								<option value="33">Santa Clara University</option>
+							
+								<option value="528">Sao Paulo School of Economics</option>
+							
+								<option value="295">Seattle University</option>
+							
+								<option value="237">Seoul National University</option>
+							
+								<option value="212">Seton Hall University</option>
+							
+								<option value="361">Shanghai Jiao Tong University</option>
+							
+								<option value="454">Shanghai University of Finance and Economics</option>
+							
+								<option value="587">Siena College</option>
+							
+								<option value="247">Simon Fraser University</option>
+							
+								<option value="138">Singapore Management University</option>
+							
+								<option value="626">South University of Science and Technology of China</option>
+							
+								<option value="30">Southern Methodist University</option>
+							
+								<option value="563">Southwestern University of Finance and Economics</option>
+							
+								<option value="159">St. John's University</option>
+							
+								<option value="210">St. Joseph's University</option>
+							
+								<option value="1">Stanford University</option>
+							
+								<option value="599">Stevens Institute of Technology</option>
+							
+								<option value="276">Stockholm School of Economics</option>
+							
+								<option value="168">Sungkyunkwan University</option>
+							
+								<option value="67">Syracuse University</option>
+							
+								<option value="539">Tel Aviv University</option>
+							
+								<option value="112">Temple University</option>
+							
+								<option value="124">Texas A&M International University</option>
+							
+								<option value="107">Texas A&M University</option>
+							
+								<option value="286">Texas A&M University - Corpus Christi</option>
+							
+								<option value="51">Texas Christian University</option>
+							
+								<option value="461">Texas State University</option>
+							
+								<option value="154">Texas Tech University</option>
+							
+								<option value="162">Tilburg University</option>
+							
+								<option value="357">Toulouse School of Economics</option>
+							
+								<option value="90">Trial Account</option>
+							
+								<option value="522">Tsinghua University</option>
+							
+								<option value="22">Tulane University</option>
+							
+								<option value="540">Ulsan National Institute of Science and Technology</option>
+							
+								<option value="567">Universidade Catolica Portuguesa</option>
+							
+								<option value="417">Universidade Nova de Lisboa - NOVA School of Business and Economics</option>
+							
+								<option value="568">Universit&eacute; Laval</option>
+							
+								<option value="407">Universit&eacute; du Qu&eacute;bec &agrave; Montr&eacute;al</option>
+							
+								<option value="619">Universitatsbibliothek Paderborn</option>
+							
+								<option value="258">University at Albany, SUNY</option>
+							
+								<option value="80">University at Buffalo</option>
+							
+								<option value="360">University of Adelaide</option>
+							
+								<option value="573">University of Akron</option>
+							
+								<option value="106">University of Alabama</option>
+							
+								<option value="134">University of Alberta</option>
+							
+								<option value="272">University of Amsterdam</option>
+							
+								<option value="172">University of Arizona</option>
+							
+								<option value="44">University of Arkansas</option>
+							
+								<option value="135">University of Auckland</option>
+							
+								<option value="558">University of Bristol</option>
+							
+								<option value="82">University of British Columbia</option>
+							
+								<option value="279">University of Calgary</option>
+							
+								<option value="4">University of California, Berkeley</option>
+							
+								<option value="169">University of California, Davis</option>
+							
+								<option value="35">University of California, Irvine</option>
+							
+								<option value="59">University of California, Los Angeles</option>
+							
+								<option value="490">University of California, Merced</option>
+							
+								<option value="267">University of California, Riverside</option>
+							
+								<option value="223">University of California, San Diego</option>
+							
+								<option value="298">University of Cambridge</option>
+							
+								<option value="238">University of Central Florida</option>
+							
+								<option value="12">University of Chicago</option>
+							
+								<option value="57">University of Cincinnati</option>
+							
+								<option value="287">University of Cologne</option>
+							
+								<option value="451">University of Colorado Denver</option>
+							
+								<option value="14">University of Colorado at Boulder</option>
+							
+								<option value="173">University of Connecticut</option>
+							
+								<option value="249">University of Cyprus</option>
+							
+								<option value="578">University of Dayton</option>
+							
+								<option value="117">University of Delaware</option>
+							
+								<option value="412">University of Denver</option>
+							
+								<option value="230">University of Edinburgh</option>
+							
+								<option value="411">University of Essex</option>
+							
+								<option value="170">University of Exeter</option>
+							
+								<option value="41">University of Florida</option>
+							
+								<option value="356">University of Geneva</option>
+							
+								<option value="29">University of Georgia</option>
+							
+								<option value="529">University of Glasgow</option>
+							
+								<option value="607">University of Gothenburg</option>
+							
+								<option value="584">University of Groningen</option>
+							
+								<option value="224">University of Hawaii, Manoa</option>
+							
+								<option value="136">University of Hong Kong</option>
+							
+								<option value="163">University of Houston</option>
+							
+								<option value="252">University of Houston Clear Lake</option>
+							
+								<option value="577">University of Hull</option>
+							
+								<option value="40">University of Illinois at Chicago</option>
+							
+								<option value="127">University of Illinois at Urbana-Champaign</option>
+							
+								<option value="64">University of Iowa</option>
+							
+								<option value="167">University of Kansas</option>
+							
+								<option value="121">University of Kentucky</option>
+							
+								<option value="283">University of Lausanne</option>
+							
+								<option value="576">University of Leeds</option>
+							
+								<option value="489">University of Liverpool</option>
+							
+								<option value="245">University of Louisville</option>
+							
+								<option value="282">University of Lugano</option>
+							
+								<option value="494">University of Macau</option>
+							
+								<option value="311">University of Maine</option>
+							
+								<option value="197">University of Manchester</option>
+							
+								<option value="443">University of Manitoba</option>
+							
+								<option value="294">University of Mannheim</option>
+							
+								<option value="128">University of Maryland</option>
+							
+								<option value="216">University of Massachusetts Amherst</option>
+							
+								<option value="518">University of Massachusetts Boston</option>
+							
+								<option value="440">University of Massachusetts Lowell</option>
+							
+								<option value="207">University of Melbourne</option>
+							
+								<option value="600">University of Memphis</option>
+							
+								<option value="34">University of Miami</option>
+							
+								<option value="43">University of Michigan</option>
+							
+								<option value="620">University of Michigan-Dearborn</option>
+							
+								<option value="17">University of Minnesota</option>
+							
+								<option value="348">University of Mississippi</option>
+							
+								<option value="83">University of Missouri - Columbia</option>
+							
+								<option value="575">University of Missouri-Kansas City</option>
+							
+								<option value="604">University of Munster</option>
+							
+								<option value="77">University of Nebraska-Lincoln</option>
+							
+								<option value="463">University of Nevada, Reno</option>
+							
+								<option value="187">University of Nevada-Las Vegas</option>
+							
+								<option value="81">University of New Hampshire</option>
+							
+								<option value="546">University of New Mexico</option>
+							
+								<option value="45">University of New South Wales</option>
+							
+								<option value="5">University of North Carolina at Chapel Hill</option>
+							
+								<option value="204">University of North Carolina at Charlotte</option>
+							
+								<option value="239">University of North Carolina at Greensboro</option>
+							
+								<option value="253">University of North Texas</option>
+							
+								<option value="147">University of Notre Dame</option>
+							
+								<option value="291">University of Nottingham</option>
+							
+								<option value="66">University of Oklahoma</option>
+							
+								<option value="13">University of Oregon</option>
+							
+								<option value="601">University of Ottawa</option>
+							
+								<option value="151">University of Oxford</option>
+							
+								<option value="175">University of Pennsylvania</option>
+							
+								<option value="53">University of Pittsburgh</option>
+							
+								<option value="179">University of Puerto Rico at Rio Piedras</option>
+							
+								<option value="365">University of Queensland</option>
+							
+								<option value="560">University of Reading</option>
+							
+								<option value="62">University of Rhode Island</option>
+							
+								<option value="275">University of Richmond</option>
+							
+								<option value="21">University of Rochester</option>
+							
+								<option value="616">University of Rochester - River Campus Library</option>
+							
+								<option value="359">University of San Diego</option>
+							
+								<option value="520">University of San Francisco</option>
+							
+								<option value="492">University of Saskatchewan</option>
+							
+								<option value="203">University of South Carolina</option>
+							
+								<option value="256">University of South Florida</option>
+							
+								<option value="625">University of Southampton</option>
+							
+								<option value="2">University of Southern California</option>
+							
+								<option value="322">University of Southern Mississippi</option>
+							
+								<option value="436">University of St. Gallen</option>
+							
+								<option value="349">University of St. Thomas</option>
+							
+								<option value="526">University of Surrey</option>
+							
+								<option value="581">University of Sussex</option>
+							
+								<option value="310">University of Sydney</option>
+							
+								<option value="305">University of Technology Sydney</option>
+							
+								<option value="122">University of Tennessee</option>
+							
+								<option value="590">University of Tennessee at Chattanooga</option>
+							
+								<option value="155">University of Texas at Arlington</option>
+							
+								<option value="32">University of Texas at Austin</option>
+							
+								<option value="52">University of Texas at Dallas</option>
+							
+								<option value="205">University of Texas at El Paso</option>
+							
+								<option value="161">University of Texas at San Antonio</option>
+							
+								<option value="481">University of Toledo</option>
+							
+								<option value="79">University of Toronto</option>
+							
+								<option value="27">University of Utah</option>
+							
+								<option value="446">University of Vienna</option>
+							
+								<option value="8">University of Virginia</option>
+							
+								<option value="50">University of Warwick</option>
+							
+								<option value="141">University of Washington</option>
+							
+								<option value="158">University of Waterloo</option>
+							
+								<option value="235">University of Western Australia</option>
+							
+								<option value="113">University of Western Ontario</option>
+							
+								<option value="262">University of Windsor</option>
+							
+								<option value="591">University of Wisconsin - Whitewater</option>
+							
+								<option value="16">University of Wisconsin-Madison</option>
+							
+								<option value="60">University of Wisconsin-Milwaukee</option>
+							
+								<option value="265">University of Wyoming</option>
+							
+								<option value="193">University of Zurich</option>
+							
+								<option value="217">Utah State University</option>
+							
+								<option value="129">Vanderbilt University</option>
+							
+								<option value="415">Victoria University of Wellington</option>
+							
+								<option value="152">Villanova University</option>
+							
+								<option value="186">Virginia Commonwealth University</option>
+							
+								<option value="37">Virginia Tech</option>
+							
+								<option value="260">Vrije University</option>
+							
+								<option value="537">WHU - Otto Beisheim School of Management</option>
+							
+								<option value="449">WU Vienna University of Economics and Business</option>
+							
+								<option value="181">Wake Forest University</option>
+							
+								<option value="564">Washington State University</option>
+							
+								<option value="9">Washington University in St. Louis</option>
+							
+								<option value="251">Washington and Lee University</option>
+							
+								<option value="178">Wayne State University</option>
+							
+								<option value="268">West Virginia University</option>
+							
+								<option value="284">Wichita State University</option>
+							
+								<option value="278">Wilfrid Laurier University</option>
+							
+								<option value="612">Worcester Polytechnic Institute</option>
+							
+								<option value="586">Xiamen University</option>
+							
+								<option value="19">Yale University</option>
+							
+								<option value="221">Yeshiva University</option>
+							
+								<option value="240">Yonsei University</option>
+							
+								<option value="72">York University</option>
+							
+								<option value="98">Vendor Partner - GTA/CSMAR</option>
+							
+								<option value="93">Vendor Partner - Standard and Poor's</option>
+							
+								<option value="125">Vendor Partner - comScore</option>
+							
+						</select>
+						<p><a class="help" rel="external" href="http://whartonwrds.com/request-a-trial/">Institution not listed?</a></p>
+					
+				</dd>
+				
+				
+					<dt id="user_type_dt"><label for="user_type">Affiliation With Institution</label></dt>
+					<dd id="user_type_dd">
+						<select id="user_type" name="user_type" onChange="SwitchType()" >
+							<option value="">-- Select Affiliation Type --</option>
+							<option value="faculty">Faculty</option>
+							<option value="staff">Staff (IT / Librarian)</option>
+							<option value="visitor">Visiting Faculty</option>
+							<option value="phd">Ph.D.</option>
+							<option value="masters">Masters Student</option>
+							<option value="ra">Research Assistant (Supervised students only)</option>
+							<option value="class">Class (Faculty requestor only)</option>
+						</select>
+						<p><a class="help" rel="external" href="/wrds/support/Additional Support/Account Types.cfm">What affiliation type should I use?</a></p>
+					</dd>
+				
+				<dt id="fname_dt"><label for="fname" title="Wharton Research Data Services">First Name</label></dt>
+				<dd id="fname_dd"><input type="text" id="fname" name="fname" maxlength="30" autocomplete="off" value="" /></dd>
+				
+				<dt id="lname_dt"><label for="lname">Last Name</label></dt>
+				<dd id="lname_dd"><input type="text" id="lname" name="lname" maxlength="30" autocomplete="off" value=""/></dd>
+				
+				<dt id="user_email_dt"><label for="user_email">Email <span>(assigned by your institution)<span></label></dt>
+				<dd id="user_email_dd"><input name="user_email" type="text" maxlength="100"  autocomplete="off"  id="user_email"  /></dd>
+				
+				<dt id="user_department_dt" ><label for="user_department">Department <span>(optional)</span></label></dt>
+				<dt id="user_department_required_dt" style="display: none;"><label for="user_department">Department</label></dt>
+				<dt id="user_school_dt" style="display: none;"><label for="user_department">School</label></dt>
+				<dd id="user_department_dd"><input name="user_department" type="text" maxlength="50"  id="user_department"  /></dd>
+				
+				<dt id="user_username_dt"><label for="user_username">Desired Username</label></dt>
+				<dd id="user_username_dd"><input type="text" id="user_username" name="user_username" maxlength="8" autocomplete="off" value=""/></dd>
+				
+				<dt id="reason_dt" style="display: none;"><label for="reason">Reason for Account Request</label></dt>
+				<dd id="reason_dd" style="display: none;"><input type="text" id="reason" name="reason" maxlength="200" autocomplete="off" value=""/></dd>
+				
+				
+				<script>
+				$j(function() {
+					$j( "#user_expdate" ).datepicker();
+				});
+				</script>
+
+				<dt id="user_expdate_dt" style="display: none;"><label id="user_expdate_label" for="user_expdate">When Do You Expect Your<br />Degree?</label></dt>
+				<dd id="user_expdate_dd" style="display: none;"><input type="text" id="user_expdate" name="user_expdate" value="" /></dd>
+				<br />
+				<dt id="fac_fname_dt" style="display: none;"><label for="fac_fname">Faculty First Name</label></dt>
+				<dd id="fac_fname_dd" style="display: none;"><input type="text" id="fac_fname" name="fac_fname" maxlength="30" autocomplete="off" value=""/></dd>
+				
+				<dt id="fac_lname_dt" style="display: none;"><label for="fac_lname">Faculty Last Name</label></dt>
+				<dd id="fac_lname_dd" style="display: none;"><input type="text" id="fac_lname" name="fac_lname" maxlength="30" autocomplete="off" value=""/></dd>
+				
+				<dt id="fac_email_dt" style="display: none;"><label for="fac_email">Faculty Email</label></dt>
+				<dd id="fac_email_dd" style="display: none;"><input type="text" id="fac_email" name="fac_email" maxlength="50" autocomplete="off" value=""/></dd>
+				
+				<dt id="class_no_dt" style="display: none;"><label for="class_no">Course Code</label></dt>
+				<dd id="class_no_dd" style="display: none;"><input type="text" id="class_no" name="class_no" maxlength="20" autocomplete="off" value=""/></dd>
+				
+				<dt id="semester_dt" style="display: none;"><label for="semester">Semester/Quarter</label></dt>
+				<dd id="semester_dd" style="display: none;"><input type="text" id="semester" name="semester" maxlength="20" autocomplete="off" value=""/></dd>
+				<br />
+				<dd id="submit_dd" class="submit"><input type="image" value="Register" alt="Register" src="/wrds/img/btn_submit.gif" /></dd>
+				
+				
+			</dl>
+			<p class="callout">Already a member? <a href="/wrds/" title="Sign In!">Sign In</a><br />
+			or <a href="https://wrds-web.wharton.upenn.edu/wrds/transfer/index.cfm" title="Request and Account Transfer">Request a Transfer</a>.</p>
+			
+		</form>
+
+		
+	</dd>
+	
+</dl>
+
+
+
+
+<!-- end #subcol -->
+</div>
+
+
+					<div id="footer">
+						
+							<p>Unless otherwise noted, all material is &copy; 1993-2015, The Wharton School, University of Pennsylvania. All rights reserved. [ <a href="https://wrds-web.wharton.upenn.edu/wrds/about/terms.cfm">Terms of Use / Privacy Policy</a> ]</p>
+						
+							
+						
+				
+					</div>
+				
+				<!-- end #container -->
+				</div>
+				
+					<script type="text/javascript" src="/wrds/js/all.js"></script>
+			
+					
+				<!-- instance: wrds-cf10-212-6, time: {ts '2015-04-19 22:05:56'}, remote_addr: 140.180.252.104 -->
+	
+		<script type="text/javascript">
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+		</script>
+		<script type="text/javascript">
+		try {
+		var pageTracker = _gat._getTracker("UA-12094173-1");
+		pageTracker._trackPageview();
+		} catch(err) {}
+		</script>
+	
+			</body>
+	</html>
