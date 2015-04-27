@@ -1,0 +1,113 @@
+\documentclass[pageno]{jpaper}
+
+%replace XXX with the submission number you are given from the ISCA submission site.
+\newcommand{\IWreport}{2012}
+
+\usepackage[normalem]{ulem}
+
+\begin{document}
+
+\title{
+A Latex template for Independent Work Reports}
+
+\date{}
+\maketitle
+
+\thispagestyle{empty}
+
+\begin{abstract}
+This document is intended to serve as a sample you can use for independent work reports.  We provide some guidelines on content and formatting.  They are not required, but they might be helpful.
+\end{abstract}
+
+\section{Introduction}
+
+This document is a sample you can use for formatting your independent work
+report.  An example template with all bib and supporting files can be downloaded
+from the IW website at {\em http://iw.cs.princeton.edu}.
+
+\section{Preparation Instructions}
+
+\subsection{Paper Formatting}
+
+There are no minimum or maximum length limits on IW reports.  
+We are including this template because we think it will be helpful
+for citing things properly and for including figures into formatted
+text.  If you are using \LaTeX~\cite{lamport94} 
+to typeset your paper, then we strongly suggest
+that you start from the template available at
+http://iw.cs.princeton.edu -- this
+document was prepared with that template.  
+If you are using a different software package to typeset your paper, 
+then you can still use this document as a reasonable sample of 
+how your report might look.  Table~\ref{table:formatting} is a suggestion
+of some formatting guidelines, as well as being an example of how to
+include a table in a Latex document.
+
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{|l|l|}
+    \hline
+    \textbf{Field} & \textbf{Value}\\
+    \hline
+    \hline
+    Paper size & US Letter 8.5in $\times$ 11in\\
+    \hline
+    Top margin & 1in\\
+    \hline
+    Bottom margin & 1in\\
+    \hline
+    Left margin & 1in\\
+    \hline
+    Right margin & 1in\\
+    \hline
+    Body font & 12pt\\
+    \hline
+    Abstract font & 12pt, italicized\\
+    \hline
+    Section heading font & 12pt, bold\\
+    \hline
+    Subsection heading font & 12pt, bold\\
+    \hline
+  \end{tabular}
+  \caption{Formatting guidelines. }
+  \label{table:formatting}
+\end{table}
+
+\textbf{Please ensure that you include page numbers with your
+submission}. This makes it easier for readers to refer to
+different parts of your paper when they provide comments.
+
+We highly recommend you use bibtex for managing your references and citations.  You can add bib entries to a references.bib file throughout the semester (e.g. as you read papers) and then they will be ready for you to cite when you start writing the report.  If you use bibtex, please note that the references.bib file provided in the template example includes some format-specific incantations at the top of the file.  If you substitute your own bib file, you will probably want to include these 
+incantations at the top of it.
+
+\subsection{Citations}
+
+There are various reasons to cite prior work and include it as references in your bibliography.  For example, If you are improving upon 
+prior work, you should include
+a full citation for the work in the bibliography \cite{nicepaper,nicepaper2}. 
+You can also cite information that is used as background or explanation.  In addition to citing scholarly papers or books, you can also create bibtex entries for webpages or other sources.  Many online databases allow you to download a premade bibtex entry for each paper you access.  You can simply copy-paste these into your references.bib file.
+
+\noindent\textbf{Figures and Tables.} Ensure that the figures and
+tables are legible.  Please also ensure that you refer to your
+figures in the main text. Make sure that your figures will be legible
+in the expected forms that the report will be read.  If you expect someone
+to print it out in gray-scale, then make sure the figures are legible 
+when printed that way.  
+
+\noindent\textbf{Main Body.} Avoid bad page or column breaks in
+your main text, i.e., last line of a paragraph at the top of a
+column or first line of a paragraph at the end of a column. If you
+begin a new section or sub-section near the end of a column,
+ensure that you have at least 2 lines of body text on the same
+column. 
+
+\subsection{Ethics}
+
+Your independent work report should abide by the basic standards of scholarly ethics and by the Princeton Honor Code. If you have any doubts about how to cite
+other work, how to quote or include text or images from other works, or other issues, please discuss them with your project adviser or with the IW coordinators. 
+\bstctlcite{bstctl:etal, bstctl:nodash, bstctl:simpurl}
+\bibliographystyle{IEEEtranS}
+\bibliography{references}
+
+\end{document}
+

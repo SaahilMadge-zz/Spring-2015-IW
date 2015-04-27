@@ -13,6 +13,8 @@ def calcPriceVolatility(numDays, priceArray):
 	volatilityArray = []
 	movingVolatilityArray = []
 	for i in range(1, numDays+1):
+		# print priceArray[i]
+		# print priceArray[i-1]
 		percentChange = 100 * (priceArray[i] - priceArray[i-1]) / priceArray[i-1]
 		movingVolatilityArray.append(percentChange)
 	volatilityArray.append(np.mean(movingVolatilityArray))
@@ -53,9 +55,12 @@ def makeModelAndPredict(permno, numDays, sectorVolatility, sectorMomentum, split
 	# get price volatility and momentum for this company
 	companyData = df[df['PERMNO'] == permno]
 	companyPrices = list(companyData['PRC'])
+	# print companyPrices
 	volatilityArray = calcPriceVolatility(numDays, companyPrices)
+	# print momentumArray
 	# print np.isnan(volatilityArray[1468])
 	momentumArray = calcMomentum(numDays, companyPrices)
+	# print momentumArray
 
 	splitIndex = splitNumber - numDays
 
@@ -125,10 +130,12 @@ def makeModelAndPredict(permno, numDays, sectorVolatility, sectorMomentum, split
 	Y = []
 	for i in range(numDays, len(companyPrices) - 1):
 		Y.append(1 if companyPrices[i] > companyPrices[i-1] else -1)
-	X_train = np.array(X[0:splitIndex]).astype('float64').copy(order='C')
-	X_test = np.array(X[splitIndex:]).astype('float64').copy(order='C')
-	y_train = np.array(Y[0:splitIndex]).astype('float64').copy(order='C')
-	y_test = np.array(Y[splitIndex:]).astype('float64').copy(order='C')
+	X_train = np.array(X[0:3]).astype('float64').copy(order='C')
+	X_test = np.array(X[3:]).astype('float64').copy(order='C')
+	y_train = np.array(Y[0:3]).astype('float64').copy(order='C')
+	y_test = np.array(Y[3:]).astype('float64').copy(order='C')
+	print X_train.shape
+	print y_train.shape
 	# print np.shape(Y)
 	# X_train, X_test, y_train, y_test = cross_validation.train_test_split(X, Y, test_size = 0.4, random_state=0)
 	# print len(X_train)
@@ -140,7 +147,7 @@ def makeModelAndPredict(permno, numDays, sectorVolatility, sectorMomentum, split
 	# print y_train
 	# print X_test
 	# print y_test
-	rbf_svm = svm.LinearSVC()
+	rbf_svm = svm.SVC(kernel='rbf')
 	rbf_svm.fit(X_train, y_train)
 	# print svm.libsvm.predict(X_test)
 	print rbf_svm.score(X_test, y_test)
@@ -197,8 +204,8 @@ def main():
 	predictionDict = {}
 
 	# for numDay in numDaysArray:
-	ndxtVolatilityArray = calcPriceVolatility(numDaysArray[0], ndxtPrices)
-	ndxtMomentumArray = calcMomentum(numDaysArray[0], ndxtPrices)
+	ndxtVolatilityArray = calcPriceVolatility(numDaysArray[1], ndxtPrices)
+	ndxtMomentumArray = calcMomentum(numDaysArray[1], ndxtPrices)
 	predictionForGivenNumDaysDict = {}
 
 	# for permno in permnoList:
@@ -208,7 +215,7 @@ def main():
 	# 	percentage = makeModelAndPredict(permno,numDaysArray[3],ndxtVolatilityArray,ndxtMomentumArray,startOfTwelve)
 	# 	predictionForGivenNumDaysDict[permno] = percentage
 
-	percentage = makeModelAndPredict(10909, numDaysArray[0],ndxtVolatilityArray,ndxtMomentumArray,startOfTwelve)
+	percentage = makeModelAndPredict(10909, numDaysArray[1],ndxtVolatilityArray,ndxtMomentumArray,startOfTwelve)
 	# print percentage
 
 	# print predictionForGivenNumDaysDict
@@ -217,7 +224,3 @@ def main():
 
 if __name__ == "__main__": 
 	main()
-
-
-
-
