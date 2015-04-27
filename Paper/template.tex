@@ -1,0 +1,144 @@
+\documentclass[pageno]{jpaper}
+
+%replace XXX with the submission number you are given from the ISCA submission site.
+\newcommand{\IWreport}{2015}
+
+\usepackage[normalem]{ulem}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{tabu}
+\usepackage{relsize}
+\usepackage{caption}
+
+\begin{document}
+
+\title{
+A Latex template for Independent Work Reports}
+\author{Saahil Madge \\ Advisor: Professor Swati Bhatt}
+
+\date{}
+\maketitle
+
+\thispagestyle{empty}
+
+\begin{abstract}
+\bigskip
+This document is intended to serve as a sample you can use for independent work reports.  We provide some guidelines on content and formatting.  They are not required, but they might be helpful.
+\end{abstract}
+
+\section{Introduction}
+
+Stock price prediction is one of the most widely studied and challenging problems, attracting researchers from many fields including economics, history, finance, mathematics, and computer science. The volatile nature of the stock market makes it difficult to apply simple time-series or regression techniques. Financial institutions and traders have created various propriety models to try and beat the market for themselves or their clients, but rarely has any achieved consistently higher-than-average returns on investment. Nevertheless, the challenge of stock forecasting is so appealing because an improvement of just a few percentage points can increase profit by millions of dollars for these institutions.
+
+Traditionally, many prediction models have focused on linear statistical time series models such as ARIMA \cite{bontempi}. However, the variance underlying the movement of stocks and other assets makes linear techniques suboptimal, and non-linear models like ARCH tend to have lower predictive error \cite{zhang}. Recently, researchers have turned to techniques in the computer science fields of big data and machine learning for stock price forecasting. These apply computational power to extend theories in mathematics and statistics. Machine learning algorithms use given data to ``figure out'' the solution to a given problem. Big data and machine learning techniques are also the basis for algorithmic and high-frequency trading routines used by financial institutions.
+
+In this paper we focus on a specific 
+
+\section{Background Information}
+\subsection{Stock Market Efficiency}
+\label{subsec: stock}
+Much economic research has been conducted into the {\em Efficient Markets Hypothesis} (EMH) theory, which posits that stock prices already reflect all available information \cite{bodie} and are therefore unpredictable. According to the EMH, stock prices will only respond to new information and so will follow a random walk. If they only respond to new information, they cannot be predicted. That the stocks follow a random walk is actually a sign of market efficiency, since predictable movement would mean that information was not being reflected by the market prices.
+
+There are three variants of this theory -- weak, semi-strong, and strong. Most research has concluded that the semi-strong version holds true. This version claims that stock prices reflect all {\em publicly} available information, but private information can be used to unfairly predict profits. This is the basis behind severe insider trading laws.
+
+Nevertheless, there are certain market phenomena that actually run contrary to EMH. These are known as market anomalies. Jegadeesh and Titman discovered that in the short term, stock prices tend to exhibit momentum\cite{jegadeesh}. Stocks that have recently been increasing continue to increase, and recently decreasing stocks continue to decrease. This type of trend implies some amount of predictability to future stock prices, contradicting the EMH. 
+
+The stock market also exhibits seasonal trends. Jacobsen and Zhang studied centuries' worth of data and found that trading strategies can exploit trends in high winter returns and low summer returns to beat the market \cite{jacobsen2}\cite{jacobsen1}.
+
+If the EMH held perfectly true, then the direction of future stock prices could not be predicted with greater than 50\% accuracy. That is, one should not be able to guess whether future prices will go up or down better than simple random guessing. However, the studies discussed in \ref{subsec: previous} are all able to predict price direction with greater than 50\% accuracy, implying that machine learning techniques are able to take advantage of momentum and other price trends to forecast price direction. We are able to replicate these results, as discussed in \ref{sec: results}.
+
+\subsection{General Machine Learning}
+There are two general classes of machine learning techniques. The first is supervised learning, in which the training data is a series of labeled examples, where each example is a collection of features that is labeled with the correct output corresponding to that feature set \cite{brownlee}. This means that the algorithm is given features and outputs for a particular dataset (training data), and must apply what it ``learns'' from this dataset to predict the outputs (labels) for another dataset (test data). Unsupervised learning, on the other hand, consists of examples where the feature set is unlabeled. The algorithms generally try to cluster the data into distinct groups.
+
+Supervised learning can be further broken down into classification and regression problems. In classification problems there are a set number of outputs that a feature set can be labeled as, whereas the output can take on continuous values in regression problems. In this paper we treat the problem of stock price forecasting as a classification problem. The feature set of a stock's recent price volatility and momentum, along with the index's recent volatility and momentum, are used to predict whether or not the next day's price will be higher ($+1$) or lower ($-1$) than the previous day's. Specifically, we are solving a binary classification problem.
+
+\subsection{Previous Research}
+\label{subsec: previous}
+
+Most research with machine learning forecasting has focused on Artificial Neural Networks (ANN) \cite{krollner}. ANNs have a series of interconnected nodes that simulate individual neurons, and are organized into different layers based on function (input layer, processing layer, output layer, etc.). The ANN assigns weights to connections, and the output is calculated based on the inputs and the weights. As the machine trains, it notices patterns in the training data and reassigns the weights. Kar demonstrates that ANNs are quite accurate when the data does not have sudden variations \cite{kar}. Patel and Yalamalle agree that ANNs can predict with accuracy slightly greater than 50\%, but caution that since stock market data varies so greatly with time and nonlinearly, prediction is difficult even with advanced techniques like ANNs \cite{patel}.
+
+Recent research in the field has used another technique known as Support Vector Machines (SVM) in addition to or as an alternative to ANNs. Whereas ANNs are models that try to minimize classification error within the training data, whereas SVMs may make classification errors within training data in order to minimize overall error across test data too. A major advantage of SVMs is that it finds a global optimum, whereas neural networks may only find a local optimum. See \ref{subsec: svm} for the mathematics behind SVMs.
+
+Using the SVM model for prediction, Kim was able to predict test data outputs with up to 57\% accuracy, significantly above the 50\% threshold \cite{kim}. Shah conducted a survey study on stock prediction using various machine learning models, and found that the best results were achieved with SVM\cite{shah}. His prediction rate of 60\% agrees with Kim's conclusion. Since most recent research has incorporated SVMs, this is the technique we use in our analysis.
+
+\subsection{Support Vector Machines}
+\label{subsec: svm}
+
+Support Vector Machines are one of the best binary classifiers. They create a decision boundary such that most points in one category fall on one side of the boundary while most points in the other category fall on the other side of the boundary. Consider a $n$-dimensional feature vector $x = (X_1, ..., X_n)$ \cite{halls-moore}. We can define a linear boundary (hyperplane) as 
+$$\beta_0+\beta_1X_1+...+\beta_nX_n=\beta_0+\sum_{i=1}^n\beta_iX_i = 0$$
+Then elements in one category will be such that the sum is greater than 0, while elements in the other category will have the sum be less than 0. With labeled examples, $\beta_0+\sum_{i=1}^n\beta_iX_i = y$, where $y$ is the label. In our classification, $y \in \{-1, 1\}$.
+
+The optimal hyperplane is such that we maximize the distance from the plane to any point. This is known as the margin. The maximim margin hyperplane (MMH) best splits the data. However, since it may not be a perfect differentiation, we can add error variables $\epsilon_1 ... \epsilon_n$ and keep their sum below some budget $B$. The  is that only the points closest to the boundary matter for hyperplane selection; all others are irrelevant. These points are known as the {\em support vectors}, and the hyperplane is known as a Support Vector Classifier (SVC) since it places each support vector in one class or the other.
+
+However, SVCs are limited in that they are only linear boundaries. SVMs fix this by applying non-linear kernel functions to map the inputs into a higher-dimensional space and linearly classify in that space. A linear classification in the higher-dimensional space will be non-linear in the original space. This is done by rewriting the above equation with inner products
+$$y = \beta_0 + \sum \alpha_iy_ix(i)*x$$
+where $*$ represents the inner product operator. The SVM replaces the inner product with a more general kernel function $K$ which allows the input to be mapped to higher-dimensions. Thus in an SVM,
+$$y = \beta_0 + \sum \alpha_i y_i K(x(i),x)$$
+
+\section{Model Creation and Evaluation Methods}
+In this paper we focus on using the SVM model with RBF Kernel for price forecasting. We found that most recent research has used the SVM model and saw an opportunity to apply this to stock price data through the Great Recession and subsequent recovery period. 
+
+\subsection{Data Collection and Timeframe}
+\label{subsec: data}
+Economic conditions greatly deteriorated in the Great Recession. Unemployment increased drastically, making the Great Recession the worst ``labor market downturn since the Great Depression''\cite{katz}. The S\&P500 index dropped 38.49\% in 2008 and then increased by 23.45\% the next year\cite{sp500returns}. In every year except 2011 the index had a double-digit increase in price. We wanted to see how the SVM model, which has had such success in previous literature, would work in such an abnormally volatile market. Although Rosillo, {\em et al} found that SVM actually has better accuracy in high-volatility markets than other types of markets, their study used simulated markets, whereas we used historical data from the Great Recession time period\cite{rosillo}.
+
+We focus specifically on the technology sector. Focusing on a sector as opposed to the broad market allow us to test the model on companies that are similar to each other, making our results relatively standardized. We use the NASDAQ-100 Technology Sector Index ($NDXT$) as the general technology sector index. The index consists of technology giants like Microsoft and Apple along with smaller companies like Akamai and NetApp. 
+
+We look at 34 of the 39 stocks in the index. For each individual company we look at daily price data from the start of 2007 through the end of 2014. This allows us to analyze the fall of each company during the Recession as well as the recovery up to current times. In previous studies on this topic the machine learning model has typically been trained on 70\% of the dataset and tested on the remaining 30\%. We keep similar proportions. We use the time period 2007-2011 (5 years) for training, and 2012-2014 (3 years) for testing. This corresponds to approximately 62.5\% training and 37.5\% testing set.
+
+Stock price data was obtained from the CRSP stock database. We use the daily closing prices. For the index data we use $NDXT$ historical data obtained from Yahoo Finance. The five stocks we do not analyze are NXP Semiconductors, Facebook, Google Class C (non-voting stock), Avago Technologies, and Texas Instruments. The first four stocks are not part of our analysis because they were publicly listed after 2009. We want to analyze a machine learning model trained through the Great Recession and recovery, but this cannot be done for stocks which were not listed during the Recession. Texas Instruments is missing some price data, so we do not analyze it either.
+
+\subsection{SVM Model}
+
+The specific kernel function we use in this study is the {\em radial kernel}. This function is one of the most popular kernel functions and is defined as 
+$$K(x_i, x_k) = exp\left(-\frac{1}{\delta^2}\sum_{j=1}^n(x_{ij}-x_{kj})^2\right)$$
+where $\delta$ is known as the {\em bandwidth} of the kernel function \cite{kim}. The advantage of this function is that it can handle diverse input sets, as there are ``few conditions on the geometry'' of the input data \cite{buhmann}. Additionally, it classifies test examples based on the example's Euclidean distance to the training points, and weights closer training points more heavily. This means that classification is based heavily on the most similar training examples and takes advantage of patterns in the data. This is exactly what is needed for time-series data such as stock prices that display trends, as discussed in \ref{subsec: stock}.
+
+\subsection{Feature Selection}
+In this study we use four features to predict stock price direction -- price volatility, price momentum, sector volatility, and sector momentum. More detail is provided in Table \ref{table: features}, styled in the form used by Kim\cite{kim}.
+
+\begin{table}[b]
+\caption{Features used in SVM} \label{table: features}
+\small
+\begin{tabular}{p{3cm} p{6cm} p{6cm}}
+\hline
+Feature name & Description & Formula \\
+\hline \\
+$ \sigma_s$ & Stock price volatility. This is an average over the past $n$ days of percent change in the given stock's price per day. & $$\dfrac{\mathlarger{\sum}_{i=t-n+1}^t \dfrac{C_i - C_{i-1}}{C_{i-1}}}{n}$$ \\
+Stock Momentum & This is an average of the given stock's momentum over the past $n$ days. Each day is labeled $1$ if closing price that day is higher than the day before, and $-1$ if the price is lower than the day before. & $$\dfrac{\mathlarger{\sum}_{i=t-n+1}^t y}{n}$$ \\ \\
+$\sigma_i$ & Index volatility. This is an average over the past $n$ days of percent change in the index's price per day. & $$\dfrac{\mathlarger{\sum}_{i=t-n+1}^t \dfrac{I_i - I_{i-1}}{I_{i-1}}}{n}$$ \\ 
+Index Momentum & This is an average of the index's momentum over the past $n$ days. Each day is labeled $1$ if closing price that day is higher than the day before, and $-1$ if the price is lower than the day before. & $$\dfrac{\mathlarger{\sum}_{i=t-n+1}^t d}{n}$$ \\ \hline
+\end{tabular}
+\footnotesize
+\\We let $C_t$ be the stock's closing price at time $t$, where $t$ is the current day, and define $I_t$ as the index's closing price that day. The stock's directional change on a given day is labeled as $y \in \{-1, 1\}$, and the index's directional change is defined as $d \in \{-1, 1\}$. We use these features to predict the direction of price change between $t$ and $t+1$.
+\end{table}
+\medskip
+
+\subsection{Method}
+In Table \ref{table: features} we describe how each of the four features are calculated by averaging some quantity over the past $n$ days. We conduct our study by varying this parameter $n$ to see exactly how trends in volatility and momentum, both of the particular stock and the index, can be used to predict future changes in that stock.
+
+Let $n_1$ be parameter $n$ for the index, and $n_2$ be for the given stock, where $n_1, n_2 \in \{5, 10, 20, 90, 270\}$. These represent one week, two weeks, one month, one quarter, and one year. In each iteration we supply some combination of $n_1, n_2$, use these parameters to calculate our feature sets, train on the training data, and then predict on the testing set and check accuracy of results. We run 25 iterations, one for each combination of $n_1, n_2$.
+
+In order to calculate the features we look at every trading date from 2007 through 2014 and calculate the four features on that date. The four features on that particular date are collected as one vector. Since we average over the past $n_1$ days for index and $n_2$ days for stock, we start calculating feature vectors on the $d = (\max(n_1, n_2) + 1)$-th date. For example, if $n_1 = 5, n_2 = 10$, then $d=11$ and we start from the 11th date. This is because we skip the first date, as volatility and momentum are both calculated based on the previous day's data, and there is no data before the first date. We also skip the last entry (Dec. 31, 2014) because each feature vector is used to predict the next day's price direction, and we do not have data for the day after the last. There are a total of 2014 trading days between 2007 and 2014, so we have a total of $2014 - d - 1$ days. The total set of feature vectors is called $X$.
+
+We also have a set of output vectors $y$. $y$ is calculated by finding the price direction on each of the $2014-d-1$ days. We then split $X$ and $Y$ into the training and testing sets as described in \ref{subsec: data}, which we call $X_{train}, y_{train}, X_{test}, y_{test}$. We supply the feature vectors $X_{train}$ as well as their corresponding output vectors $y_{train}$ to the SVM model. This is the training phase. We then supply {\em only} the testing feature vectors $X_{test}$ and have the model predict their corresponding output vectors. We then compare this output to $y_{train}$.
+
+\section{Results}
+\label{sec: results}
+The results are summarized in Table \ref{table: results}. We varied the index parameter $n_1$ and stock parameter $n_2$ across all combinations and ran our model across each of the 34 stocks in every iteration. Each table cell contains the average, highest, and lowest accuracy across the 34 stocks for that particular combination of $n_1, n_2$. 
+
+\begin{table}
+\caption{SVM Model Results for specified $n_1$, $n_2$}
+\label{table: results}
+\end{table}
+
+\section{Discussion}
+
+\section{Conclusions}
+
+\bstctlcite{bstctl:etal, bstctl:nodash, bstctl:simpurl}
+\bibliographystyle{IEEEtranS}
+\bibliography{references}
+
+\end{document}
+
