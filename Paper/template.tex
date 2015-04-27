@@ -9,6 +9,7 @@
 \usepackage{tabu}
 \usepackage{relsize}
 \usepackage{caption}
+\usepackage{float}
 
 \begin{document}
 
@@ -68,10 +69,16 @@ Support Vector Machines are one of the best binary classifiers. They create a de
 $$\beta_0+\beta_1X_1+...+\beta_nX_n=\beta_0+\sum_{i=1}^n\beta_iX_i = 0$$
 Then elements in one category will be such that the sum is greater than 0, while elements in the other category will have the sum be less than 0. With labeled examples, $\beta_0+\sum_{i=1}^n\beta_iX_i = y$, where $y$ is the label. In our classification, $y \in \{-1, 1\}$.
 
-The optimal hyperplane is such that we maximize the distance from the plane to any point. This is known as the margin. The maximim margin hyperplane (MMH) best splits the data. However, since it may not be a perfect differentiation, we can add error variables $\epsilon_1 ... \epsilon_n$ and keep their sum below some budget $B$. The  is that only the points closest to the boundary matter for hyperplane selection; all others are irrelevant. These points are known as the {\em support vectors}, and the hyperplane is known as a Support Vector Classifier (SVC) since it places each support vector in one class or the other.
-
-However, SVCs are limited in that they are only linear boundaries. SVMs fix this by applying non-linear kernel functions to map the inputs into a higher-dimensional space and linearly classify in that space. A linear classification in the higher-dimensional space will be non-linear in the original space. This is done by rewriting the above equation with inner products
+We can rewrite the hyperplane equation using inner products.
 $$y = \beta_0 + \sum \alpha_iy_ix(i)*x$$
+Note that the inner product is weighted by its label. 
+
+The optimal hyperplane is such that we maximize the distance from the plane to any point. This is known as the margin. The maximim margin hyperplane (MMH) best splits the data. However, since it may not be a perfect differentiation, we can add error variables $\epsilon_1 ... \epsilon_n$ and keep their sum below some budget $B$. The crucial element is that only the points closest to the boundary matter for hyperplane selection; all others are irrelevant. These points are known as the {\em support vectors}, and the hyperplane is known as a Support Vector Classifier (SVC) since it places each support vector in one class or the other.
+
+The concept of the SVC is similar to another popular linear regression model, Ordinary Least Squares (OLS). However, the two optimize different quantities. The OLS finds the residuals, the distance from each data point to the fit line, and {\em minimizes} the sum of squares of these residuals \cite{watson}. The SVC on the other hand looks at only the support vectors, and uses the inner product to {\em maximize} the distance from hyperplane to the support vector. Additionally, the inner products in SVC are weighted by their labels, whereas in OLS the square of residuals serves as the weighting.
+
+SVCs are limited in that they are only linear boundaries. SVMs fix this by applying non-linear kernel functions to map the inputs into a higher-dimensional space and linearly classify in that space. A linear classification in the higher-dimensional space will be non-linear in the original space. This is done by rewriting the above equation with inner products
+
 where $*$ represents the inner product operator. The SVM replaces the inner product with a more general kernel function $K$ which allows the input to be mapped to higher-dimensions. Thus in an SVM,
 $$y = \beta_0 + \sum \alpha_i y_i K(x(i),x)$$
 
@@ -97,7 +104,7 @@ where $\delta$ is known as the {\em bandwidth} of the kernel function \cite{kim}
 \subsection{Feature Selection}
 In this study we use four features to predict stock price direction -- price volatility, price momentum, sector volatility, and sector momentum. More detail is provided in Table \ref{table: features}, styled in the form used by Kim\cite{kim}.
 
-\begin{table}[b]
+\begin{table}[H]
 \caption{Features used in SVM} \label{table: features}
 \small
 \begin{tabular}{p{3cm} p{6cm} p{6cm}}
@@ -127,10 +134,16 @@ We also have a set of output vectors $y$. $y$ is calculated by finding the price
 \label{sec: results}
 The results are summarized in Table \ref{table: results}. We varied the index parameter $n_1$ and stock parameter $n_2$ across all combinations and ran our model across each of the 34 stocks in every iteration. Each table cell contains the average, highest, and lowest accuracy across the 34 stocks for that particular combination of $n_1, n_2$. 
 
-\begin{table}
-\caption{SVM Model Results for specified $n_1$, $n_2$}
-\label{table: results}
-\end{table}
+% add figure here instead
+
+% \begin{table}
+% \caption{SVM Model Results for specified $n_1$, $n_2$} \label{table: results}
+% \tiny
+% \begin{tabular}{p{2cm} p{2cm} p{2cm} p{2cm} p{2cm}}
+% \hline
+% & \multicolumn{4}{c}
+% \end{tabular}
+% \end{table}
 
 \section{Discussion}
 
