@@ -21,18 +21,18 @@ def calcPriceVolatility(numDays, priceArray):
 	for i in range(numDays + 1, len(priceArray) - 1):
 		del movingVolatilityArray[0]
 		percentChange = 100 * (priceArray[i] - priceArray[i-1]) / priceArray[i-1]
-		if np.isnan(priceArray[i]):
-			print 'HERE'
-			print i
-		if np.isnan(priceArray[i]):
-			print 'HERE!'
-			print i
+		# if np.isnan(priceArray[i]):
+		# 	print 'HERE'
+		# 	print i
+		# if np.isnan(priceArray[i]):
+		# 	print 'HERE!'
+		# 	print i
 		movingVolatilityArray.append(percentChange)
 		volatilityArray.append(np.mean(movingVolatilityArray))
-		if np.isnan(np.mean(movingVolatilityArray)):
-			print 'HERE!'
-			print i
-	print len(volatilityArray)
+		# if np.isnan(np.mean(movingVolatilityArray)):
+		# 	print 'HERE!'
+		# 	print i
+	# print len(volatilityArray)
 	return volatilityArray
 
 # calculate momentum array
@@ -47,7 +47,7 @@ def calcMomentum(numDays, priceArray):
 		del movingMomentumArray[0]
 		movingMomentumArray.append(1 if priceArray[i] > priceArray[i-1] else -1)
 		momentumArray.append(np.mean(movingMomentumArray))
-	print len(momentumArray)
+	# print len(momentumArray)
 	return momentumArray
 
 def makeModelAndPredict(permno, numDays, sectorVolatility, sectorMomentum, splitNumber):
@@ -123,6 +123,31 @@ def makeModelAndPredict(permno, numDays, sectorVolatility, sectorMomentum, split
 # 	print rbf_svc.score(X_test_scaled, Y_test)
 # 	# return sum(truthArray)/len(truthArray)
 
+	# print len(volatilityArray)
+	# print len(momentumArray)
+	# print len(sectorVolatility)
+	# print len(sectorMomentum)
+
+	# since they are different lengths, find the min length
+	if len(volatilityArray) > len(sectorVolatility):
+		# print 'here'
+		difference = len(volatilityArray) - len(sectorVolatility)
+		del volatilityArray[:difference]
+		del momentumArray[:difference]
+		# print len(volatilityArray)
+		# print len(momentumArray)
+		# print len(sectorVolatility)
+		# print len(sectorMomentum)
+	elif len(sectorVolatility) > len(volatilityArray):
+		# print 'here'
+		difference = len(sectorVolatility) - len(volatilityArray)
+		del sectorVolatility[:difference]
+		del sectorMomentum[:difference]
+		# print len(volatilityArray)
+		# print len(momentumArray)
+		# print len(sectorVolatility)
+		# print len(sectorMomentum)
+
 	X = np.transpose(np.array([volatilityArray, momentumArray, sectorVolatility, sectorMomentum]))
 	# X = np.arange(len(volatilityArray))
 	# print np.shape(X) 
@@ -130,12 +155,19 @@ def makeModelAndPredict(permno, numDays, sectorVolatility, sectorMomentum, split
 	Y = []
 	for i in range(numDays, len(companyPrices) - 1):
 		Y.append(1 if companyPrices[i] > companyPrices[i-1] else -1)
-	X_train = np.array(X[0:3]).astype('float64').copy(order='C')
-	X_test = np.array(X[3:]).astype('float64').copy(order='C')
-	y_train = np.array(Y[0:3]).astype('float64').copy(order='C')
-	y_test = np.array(Y[3:]).astype('float64').copy(order='C')
-	print X_train.shape
-	print y_train.shape
+	print len(Y)
+	if len(Y) > len(X):
+		# print 'here2'
+		difference = len(Y) - len(X)
+		del Y[:difference]
+		# print len(Y)
+
+	X_train = np.array(X[0:splitIndex]).astype('float64')#.copy(order='C')
+	X_test = np.array(X[splitIndex:]).astype('float64')#.copy(order='C')
+	y_train = np.array(Y[0:splitIndex]).astype('float64')#.copy(order='C')
+	y_test = np.array(Y[splitIndex:]).astype('float64')#.copy(order='C')
+	# print X_train.shape
+	# print y_train.shape
 	# print np.shape(Y)
 	# X_train, X_test, y_train, y_test = cross_validation.train_test_split(X, Y, test_size = 0.4, random_state=0)
 	# print len(X_train)
@@ -150,20 +182,22 @@ def makeModelAndPredict(permno, numDays, sectorVolatility, sectorMomentum, split
 	rbf_svm = svm.SVC(kernel='rbf')
 	rbf_svm.fit(X_train, y_train)
 	# print svm.libsvm.predict(X_test)
-	print rbf_svm.score(X_test, y_test)
+	score = rbf_svm.score(X_test, y_test)
+	print score
+	return score
 
 def main():
 	global df
 	permnoList = sorted(set(list(df['PERMNO'])))
 	# for i in permnoList:
 	# 	print i
-	print len(permnoList) # should be 39
-	print permnoList
+	# print len(permnoList) # should be 39
+	# print permnoList
 
 	# for permno in permnoList:
 	# 	print "%d:\t%d" % (permno, list(df[df['PERMNO'] == permno]['date']).__contains__(20070103))
 
-	companiesNotFull = [12084, 13407, 14542, 93002] # companies without full dates
+	companiesNotFull = [12084, 13407, 14542, 93002, 15579] # companies without full dates
 
 	# read the tech sector data
 	ndxtdf = pandas.read_csv('ndxtdata.csv')
@@ -199,28 +233,39 @@ def main():
 
 
 	# we want to predict where it will be on the next day based on X days previous
-	numDaysArray = [1, 5, 20, 90, 270] # day, week, month, quarter, year
+	numDaysArray = [5, 10, 20, 90, 270] # day, week, month, quarter, year
 
 	predictionDict = {}
 
-	# for numDay in numDaysArray:
-	ndxtVolatilityArray = calcPriceVolatility(numDaysArray[1], ndxtPrices)
-	ndxtMomentumArray = calcMomentum(numDaysArray[1], ndxtPrices)
-	predictionForGivenNumDaysDict = {}
+	for numDayIndex in numDaysArray:
+		for numDayStock in numDaysArray:
+			ndxtVolatilityArray = calcPriceVolatility(numDayIndex, ndxtPrices)
+			ndxtMomentumArray = calcMomentum(numDayIndex, ndxtPrices)
+			predictionForGivenNumDaysDict = {}
 
-	# for permno in permnoList:
-	# 	if permno in companiesNotFull:
-	# 		continue
-	# 	print permno
-	# 	percentage = makeModelAndPredict(permno,numDaysArray[3],ndxtVolatilityArray,ndxtMomentumArray,startOfTwelve)
-	# 	predictionForGivenNumDaysDict[permno] = percentage
+			for permno in permnoList:
+				if permno in companiesNotFull:
+					continue
+				print permno
+				percentage = makeModelAndPredict(permno,numDayStock,ndxtVolatilityArray,ndxtMomentumArray,startOfTwelve)
+				predictionForGivenNumDaysDict[permno] = percentage
 
-	percentage = makeModelAndPredict(10909, numDaysArray[1],ndxtVolatilityArray,ndxtMomentumArray,startOfTwelve)
-	# print percentage
+			# percentage = makeModelAndPredict(10909, numDaysArray[1],ndxtVolatilityArray,ndxtMomentumArray,startOfTwelve)
 
-	# print predictionForGivenNumDaysDict
+			# print predictionForGivenNumDaysDict
+			predictionAccuracies = predictionForGivenNumDaysDict.values()
+			meanAccuracy = np.mean(predictionAccuracies)
+			maxIndex = max(predictionForGivenNumDaysDict, key=predictionForGivenNumDaysDict.get)
+			maxAccuracy = (maxIndex, predictionForGivenNumDaysDict[maxIndex])
+			minIndex = min(predictionForGivenNumDaysDict, key=predictionForGivenNumDaysDict.get)
+			minAccuracy = (minIndex, predictionForGivenNumDaysDict[minIndex])
 
-		# predictionDict[numDay] = predictionForGivenNumDaysDict
+			numDaysTuple = (numDayIndex, numDayStock)
+			predictionDict[numDaysTuple] = {'mean accuracy':meanAccuracy, 'max':maxAccuracy, 'min':minAccuracy}
+
+	# print predictionDict
+	for numDaysTuple in predictionDict:
+		print "%s:\t %s" % (numDaysTuple, predictionDict[numDaysTuple])
 
 if __name__ == "__main__": 
 	main()
