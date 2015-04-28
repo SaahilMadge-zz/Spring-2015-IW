@@ -51,7 +51,7 @@ If the EMH held perfectly true, then the direction of future stock prices could 
 \subsection{General Machine Learning}
 There are two general classes of machine learning techniques. The first is supervised learning, in which the training data is a series of labeled examples, where each example is a collection of features that is labeled with the correct output corresponding to that feature set \cite{brownlee}. This means that the algorithm is given features and outputs for a particular dataset (training data), and must apply what it ``learns'' from this dataset to predict the outputs (labels) for another dataset (test data). Unsupervised learning, on the other hand, consists of examples where the feature set is unlabeled. The algorithms generally try to cluster the data into distinct groups.
 
-Supervised learning can be further broken down into classification and regression problems. In classification problems there are a set number of outputs that a feature set can be labeled as, whereas the output can take on continuous values in regression problems. In this paper we treat the problem of stock price forecasting as a classification problem. The feature set of a stock's recent price volatility and momentum, along with the index's recent volatility and momentum, are used to predict whether or not the next day's price will be higher ($+1$) or lower ($-1$) than the previous day's. Specifically, we are solving a binary classification problem.
+Supervised learning can be further broken down into classification and regression problems. In classification problems there are a set number of outputs that a feature set can be labeled as, whereas the output can take on continuous values in regression problems. In this paper we treat the problem of stock price forecasting as a classification problem. The feature set of a stock's recent price volatility and momentum, along with the index's recent volatility and momentum, are used to predict whether or not the stock's price $m$ days in the future will be higher ($+1$) or lower ($-1$) than the current day's price. Specifically, we are solving a binary classification problem.
 
 \subsection{Previous Research}
 \label{subsec: previous}
@@ -71,15 +71,13 @@ Then elements in one category will be such that the sum is greater than 0, while
 
 We can rewrite the hyperplane equation using inner products.
 $$y = \beta_0 + \sum \alpha_iy_ix(i)*x$$
-Note that the inner product is weighted by its label. 
+where $*$ represents the inner product operator. Note that the inner product is weighted by its label. 
 
 The optimal hyperplane is such that we maximize the distance from the plane to any point. This is known as the margin. The maximim margin hyperplane (MMH) best splits the data. However, since it may not be a perfect differentiation, we can add error variables $\epsilon_1 ... \epsilon_n$ and keep their sum below some budget $B$. The crucial element is that only the points closest to the boundary matter for hyperplane selection; all others are irrelevant. These points are known as the {\em support vectors}, and the hyperplane is known as a Support Vector Classifier (SVC) since it places each support vector in one class or the other.
 
-The concept of the SVC is similar to another popular linear regression model, Ordinary Least Squares (OLS). However, the two optimize different quantities. The OLS finds the residuals, the distance from each data point to the fit line, and {\em minimizes} the sum of squares of these residuals \cite{watson}. The SVC on the other hand looks at only the support vectors, and uses the inner product to {\em maximize} the distance from hyperplane to the support vector. Additionally, the inner products in SVC are weighted by their labels, whereas in OLS the square of residuals serves as the weighting.
+The concept of the SVC is similar to another popular linear regression model, Ordinary Least Squares (OLS). However, the two optimize different quantities. The OLS finds the residuals, the distance from each data point to the fit line, and {\em minimizes} the sum of squares of these residuals \cite{watson}. The SVC on the other hand looks at only the support vectors, and uses the inner product to {\em maximize} the distance from hyperplane to the support vector. Additionally, the inner products in SVC are weighted by their labels, whereas in OLS the square of residuals serves as the weighting. Thus SVC and OLS are two different methods of approaching this problem.
 
-SVCs are limited in that they are only linear boundaries. SVMs fix this by applying non-linear kernel functions to map the inputs into a higher-dimensional space and linearly classify in that space. A linear classification in the higher-dimensional space will be non-linear in the original space. This is done by rewriting the above equation with inner products
-
-where $*$ represents the inner product operator. The SVM replaces the inner product with a more general kernel function $K$ which allows the input to be mapped to higher-dimensions. Thus in an SVM,
+SVCs are limited in that they are only linear boundaries. SVMs fix this by applying non-linear kernel functions to map the inputs into a higher-dimensional space and linearly classify in that space. A linear classification in the higher-dimensional space will be non-linear in the original space. The SVM replaces the inner product with a more general kernel function $K$ which allows the input to be mapped to higher-dimensions. Thus in an SVM,
 $$y = \beta_0 + \sum \alpha_i y_i K(x(i),x)$$
 
 \section{Model Creation and Evaluation Methods}
@@ -117,7 +115,7 @@ $\sigma_i$ & Index volatility. This is an average over the past $n$ days of perc
 Index Momentum & This is an average of the index's momentum over the past $n$ days. Each day is labeled $1$ if closing price that day is higher than the day before, and $-1$ if the price is lower than the day before. & $$\dfrac{\mathlarger{\sum}_{i=t-n+1}^t d}{n}$$ \\ \hline
 \end{tabular}
 \footnotesize
-\\We let $C_t$ be the stock's closing price at time $t$, where $t$ is the current day, and define $I_t$ as the index's closing price that day. The stock's directional change on a given day is labeled as $y \in \{-1, 1\}$, and the index's directional change is defined as $d \in \{-1, 1\}$. We use these features to predict the direction of price change between $t$ and $t+1$.
+\\We let $C_t$ be the stock's closing price at time $t$, where $t$ is the current day, and define $I_t$ as the index's closing price that day. The stock's directional change on a given day is labeled as $y \in \{-1, 1\}$, and the index's directional change is defined as $d \in \{-1, 1\}$. We use these features to predict the direction of price change between $t$ and $t + m$, where $m \in \{1, 5, 10, 20, 90, 270\}$.
 \end{table}
 \medskip
 
@@ -126,13 +124,13 @@ In Table \ref{table: features} we describe how each of the four features are cal
 
 Let $n_1$ be parameter $n$ for the index, and $n_2$ be for the given stock, where $n_1, n_2 \in \{5, 10, 20, 90, 270\}$. These represent one week, two weeks, one month, one quarter, and one year. In each iteration we supply some combination of $n_1, n_2$, use these parameters to calculate our feature sets, train on the training data, and then predict on the testing set and check accuracy of results. We run 25 iterations, one for each combination of $n_1, n_2$.
 
-In order to calculate the features we look at every trading date from 2007 through 2014 and calculate the four features on that date. The four features on that particular date are collected as one vector. Since we average over the past $n_1$ days for index and $n_2$ days for stock, we start calculating feature vectors on the $d = (\max(n_1, n_2) + 1)$-th date. For example, if $n_1 = 5, n_2 = 10$, then $d=11$ and we start from the 11th date. This is because we skip the first date, as volatility and momentum are both calculated based on the previous day's data, and there is no data before the first date. We also skip the last entry (Dec. 31, 2014) because each feature vector is used to predict the next day's price direction, and we do not have data for the day after the last. There are a total of 2014 trading days between 2007 and 2014, so we have a total of $2014 - d - 1$ days. The total set of feature vectors is called $X$.
+In order to calculate the features we look at every trading date from 2007 through 2014 and calculate the four features on that date. The four features on that particular date are collected as one vector. Since we average over the past $n_1$ days for index and $n_2$ days for stock, we start calculating feature vectors on the $d = (\max(n_1, n_2) + 1)$-th date. For example, if $n_1 = 5, n_2 = 10$, then $d=11$ and we start from the 11th date. This is because we skip the first date, as volatility and momentum are both calculated based on the previous day's data, and there is no data before the first date. We are calculating the features to try and predict the price direction $m$ days in the future, where $m \in \{1, 5, 10, 20, 90, 270\}$. As a result we skip the last $m$ dates since we do not have the price $m$ days after them. There are a total of 2014 trading days between 2007 and 2014, so we have a total of $2014 - d - m$ days. The total set of feature vectors is called $X$.
 
-We also have a set of output vectors $y$. $y$ is calculated by finding the price direction on each of the $2014-d-1$ days. We then split $X$ and $Y$ into the training and testing sets as described in \ref{subsec: data}, which we call $X_{train}, y_{train}, X_{test}, y_{test}$. We supply the feature vectors $X_{train}$ as well as their corresponding output vectors $y_{train}$ to the SVM model. This is the training phase. We then supply {\em only} the testing feature vectors $X_{test}$ and have the model predict their corresponding output vectors. We then compare this output to $y_{train}$.
+We also have a set of output vectors $y$. $y$ is calculated by finding the price direction on each of the $2014-d-m$ days. We then split $X$ and $Y$ into the training and testing sets as described in \ref{subsec: data}, which we call $X_{train}$, $y_{train}$, $X_{test}$, $y_{test}$. We supply the feature vectors $X_{train}$ as well as their corresponding output vectors $y_{train}$ to the SVM model. This is the training phase. We then supply {\em only} the testing feature vectors $X_{test}$ and have the model predict their corresponding output vectors. We then compare this output to $y_{train}$.
 
 \section{Results}
 \label{sec: results}
-The results are summarized in Table \ref{table: results}. We varied the index parameter $n_1$ and stock parameter $n_2$ across all combinations and ran our model across each of the 34 stocks in every iteration. Each table cell contains the average, highest, and lowest accuracy across the 34 stocks for that particular combination of $n_1, n_2$. 
+The full table of results can be found in the Appendix.
 
 % add figure here instead
 
@@ -146,9 +144,55 @@ The results are summarized in Table \ref{table: results}. We varied the index pa
 % \end{table}
 
 \section{Discussion}
+One notable result is that the SVM model is only tenths of a percentage point better than simple random guessing when it comes to predicting price direction one day ahead ($m=1$). This has several important implications. First, it strongly reinforces the Efficient Markets Hypothesis. If a model that incorporates several types of historical data, including some features like momentum that economists have demonstrated are present in stock price data, is not able to do better than a coin flip when it comes to predicting the next day's price direction, then this is very strong evidence that prices follow a random walk. Prices that already reflect available information will change only based on new information, so tomorrow's price direction will be dependent only on new information that arrives tomorrow. A model like ours which analyzes only historical data should not be able to predict the price direction, as all this historical data should already be incorporated into the price. Therefore, our model's difficulty in predicting the next day's stock price supports EMH.
 
-\section{Conclusions}
+Several trends emerge as we increase the parameter $m$. The most striking is that the mean and median returns increase when $m=5,10,20$ but then decrease slightly when $m=90$ and $m=270$. Figure \ref{fig: meanvsm} shows the mean prediction accuracy against the parameter $m$, where mean prediction accuracy here is the mean of the mean accuracies for all 25 combinations of $n_1, n_2$ with a fixed $m$, where each combination itself reports the mean accuracy across the 34 stocks.
 
+\begin{figure}
+\includegraphics[width=0.9\textwidth]{MeanReturnvsM.png}
+\caption{The mean prediction accuracy for each parameter $m$}
+\label{fig: meanvsm}
+\end{figure}
+
+
+This number does not tell the whole story, however. Looking at the full results in the Appendix, we see that when $m$ is small, varying $n_1$ and $n_2$ has little effect. For example, when $m=1$ mean accuracy is within 49.5\% and 50.53\% for every combination of $n_1, n_2$. It is interesting, however, to note that for prediction when $m=1$ very small values or very large values of $n_1, n_2$ work best. Mean and median accuracy are highest when at least one of the two is 5, or when both are 90 or 270. This implies that very short-term trends, or long-term trends, are best for predicting the next day's price direction. Trends across two weeks or a month, however, perform worse than simple random guessing.
+
+The parameters $n_1$ and $n_2$ start to become more important as we increase $m$. When $m=10$ the mean prediction accuracy varies between 53.3\% and 56.8\%, a much larger range than at $m=1$. This disparity is exaggerated when $m=90$, that is, when we try to predict the price direction across the next quarter. Some combinations of $n_1, n_2$, such as $n_1=10, n_2=90$ actually result in less than 50\% accuracy, which means one would be better off flipping a coin. However, other combinations have very high accuracies. For example, $n_1 = 270, n_2 = 5$ results in a 61.5\% prediction accuracy. 
+
+\begin{figure}
+\includegraphics[width=0.9\textwidth]{MeanAccuraciesForQuarter.png}
+\caption{The mean prediction accuracy for each combination of $n_1, n_2$ when $m=90$}
+\label{fig: meansforquarter}
+\end{figure}
+
+Such discrepancies indicate that as the model tries to forecast farther into the future, the input parameters and historical data have drastically more influence. This again reinforces the EMH and the idea of stocks as a random walk. Regardless of the historical data used, short-term changes are difficult to predict, indicating that trends do not matter much in the short run, but may still offer some predictive ability. Long-term changes, however, are subject to seasonality and the trends discussed in \ref{subsec: stock}. With the right input data, the model can take advantage of these trends. If the training data reflects similar conditions to those in the test dataset, the model will have high predictive power. However, the wrong training dataset can skew the model and even lead to worse than 50\% prediction accuracy. Figure \ref{fig: meansforquarter} shows the prediction accuracies for each combination of $n_1, n_2$ when $m=90$.
+
+Another noticeable trend is that in general, $n_1 = 270$ results in the highest prediction accuracy for all $m$. That is, the overall sector’s historical data over the past year tends to be helpful in predicting the price direction at any point in the future. It is more helpful as we try to predict further into the future, but even in the short-term, it appears that the general sector trend is a better predictor than the short-term sector trend.
+
+Almost the opposite is true for the parameter $n_2$. Mean prediction accuracy tends to be highest when $n_2 = 5$, the smallest value, but this is affected by parameter $m$. When $m$ is small too, choosing $n_2=5$ has most effect; when $m$ is small it still performs better than other values of $n_2$, but not as much.  This makes intuitive sense; a stock’s recent momentum is better than other indicators since it reflects most recent information. However, recent momentum is not as helpful when trying to predict farther into the future.
+
+When $m$ is small, the choice of parameter $n_2$ has more effect than choice of parameter $n_1$, and here performance is best when $n_2 = 5$. However, as $m$ increases, the choice of parameter $n_1$ becomes more important. Again, this makes intuitive sense. When trying to predict price direction in the short term, the particular stock’s momentum can provide some indication (but not much). However for predicting long-term price direction, the long-term sector trends are most helpful. Long-term sector trends reflect the market’s overall macro-conditions, and are not swayed by small fluctuations. The particular stock’s data, however, reflects only idiosyncratic conditions. This indicates that predicting long-term price direction for a particular stock might depend more on the overall market’s direction, and larger macro-conditions, than on the stock’s own trends. Once again, this supports EMH. If long-term stock direction were predictable based solely on that stock itself, this would mean prices react not only to new information but also to existing information, violating EMH.
+
+It is also important to note that for short-term periods, simply being able to somewhat accurately predict tomorrow's price direction does not necessarily translate into trading profits. Treating the problem as binary classification allows us to more easily construct models, but it also means that we cannot predict the magnitude of the price change. Stock transactions have transaction costs, and the profit gained from small trades might not outweigh the costs.  Even though we did not find predictive ability for the next day, we were able to find some predictive ability within the next week or month. Nevertheless, translating this small predictive advantage into trading profits is entirely another issue.
+
+Finally, we note that the long-term predictive ability also may not directly translate to long-term profits, although not due to trading costs. When $m=90, 270$ the overall mean predictive accuracy is less than in the short term, but with the right choice of parameters $n_1, n_2$ the accuracy can be higher than 60\%. This number, however, is itself an average of the prediction accuracies for each of the 34. As discussed above and seen in the Appendix, the range of prediction for stocks increases as we increase $m$, and becomes very large when $m=90, 270$. We see that the model is able to predict price direction for some stocks with greater than 80\% accuracy, but for others cannot predict with more than 30\% accuracy. The problem is that we do not yet know ahead of time which stocks the model will be able to predict accurately and which it will not, so profiting off the model is still difficult without more experimentation.
+
+\section{Future Work}
+\subsection{Adding Granularity}
+One limitation of this study is that we only looked at daily stock price data. As a result, our momentum and volatility parameters were calculated over weeks. This is different from actual hedge funds and quantitative trading institutions, which study price data at a far more granular level, on the order of minutes or even seconds. We can further this study by looking at intra-day trading data in addition to closing price data. By observing intra-day trends, we can create more robust models that capitalize on sudden changes in momentum during intra-day trading. Individual stocks often have price swings that last only for a couple minutes, which an intra-day model can analyze, and then use to predict price direction in the next few seconds or minutes. This is how such financial institutions make trading profits.
+
+\subsection{Feature Selection}
+Feature selection often has the biggest impact on a machine learning model’s accuracy. Another area for future work is to add to our feature list. Here we have looked at price volatility and momentum for the particular stock and for the technology sector. Future work would involve adding features related to the specific company and related to broader macroeconomic factors. Features related to the specific company include its Price/Earnings ratio, its market cap, working capital ratio, cost-of-capital, etc. Features related to broader factors include interest rate, inflation, GDP growth rate, etc.
+
+\subsection{Analyzing Other Sectors and Sizes}
+Another area for future growth is to apply our model to stocks in other sectors. In this study we have only focused on the technology sector, specifically 34 mature technology companies. We can apply our methods to other sectors such as healthcare, retail, service, etc. We can also apply our methods to mid-size and startup companies, to see how the size of a company affects our model’s predictive ability. 
+
+\newpage
+\section*{Appendix: Results Data}
+\label{app: appendix}
+Here we present the full data table of results.
+
+\newpage
 \bstctlcite{bstctl:etal, bstctl:nodash, bstctl:simpurl}
 \bibliographystyle{IEEEtranS}
 \bibliography{references}

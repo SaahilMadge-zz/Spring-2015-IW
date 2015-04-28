@@ -61,6 +61,10 @@ M.~Halls-Moore, ``Support vector machines: A guide for beginners,'' September
 K.~jae Kim, ``Financial time series forecasting using support vector
   machines,'' \emph{Neurocomputing}, vol.~55, 2003.
 
+\bibitem{watson}
+M.~W.~W. James H.~Stock, \emph{Introduction to Econometrics}.\hskip 1em plus
+  0.5em minus 0.4em\relax Addison-Wesley, 2015.
+
 \bibitem{kar}
 A.~Kar, ``Stock prediction using artificial neural networks,'' \emph{Dept. of
   Computer Science and Engineering, IIT Kanpur}.

@@ -23,45 +23,45 @@ Warning--empty year in kar
 Warning--empty journal in shah
 
 Done.
-You've used 17 entries,
+You've used 18 entries,
             4498 wiz_defined-function locations,
-            976 strings with 10084 characters,
-and the built_in function-call counts, 8446 in all, are:
-= -- 768
-> -- 123
+            980 strings with 10162 characters,
+and the built_in function-call counts, 8851 in all, are:
+= -- 799
+> -- 130
 < -- 25
-+ -- 62
-- -- 30
-* -- 358
-:= -- 1466
-add.period$ -- 34
-call.type$ -- 17
-change.case$ -- 64
++ -- 65
+- -- 32
+* -- 372
+:= -- 1539
+add.period$ -- 36
+call.type$ -- 18
+change.case$ -- 67
 chr.to.int$ -- 48
-cite$ -- 23
-duplicate$ -- 628
-empty$ -- 748
-format.name$ -- 30
-if$ -- 1824
+cite$ -- 24
+duplicate$ -- 657
+empty$ -- 797
+format.name$ -- 32
+if$ -- 1914
 int.to.chr$ -- 0
-int.to.str$ -- 17
-missing$ -- 104
-newline$ -- 76
-num.names$ -- 30
-pop$ -- 288
+int.to.str$ -- 18
+missing$ -- 109
+newline$ -- 79
+num.names$ -- 32
+pop$ -- 305
 preamble$ -- 1
-purify$ -- 50
+purify$ -- 53
 quote$ -- 2
-skip$ -- 652
+skip$ -- 686
 stack$ -- 0
-substring$ -- 212
-swap$ -- 357
+substring$ -- 217
+swap$ -- 370
 text.length$ -- 9
 text.prefix$ -- 0
 top$ -- 6
-type$ -- 173
+type$ -- 178
 warning$ -- 6
-while$ -- 39
-width$ -- 19
-write$ -- 157
+while$ -- 41
+width$ -- 20
+write$ -- 164
 (There were 9 warnings)

@@ -6,7 +6,7 @@ from sklearn import cross_validation
 
 # read the data
 df = pandas.read_csv('techsectordatareal.csv')
-daysAhead = 1
+daysAhead = 270
 
 # calculate price volatility array given company
 def calcPriceVolatility(numDays, priceArray):
@@ -238,45 +238,46 @@ def main():
 
 
 	# we want to predict where it will be on the next day based on X days previous
-	numDaysArray = [1, 5, 10, 20, 90, 150, 270] # day, week, month, quarter, year
+	numDaysArray = [5, 10, 20, 90, 270] # day, week, month, quarter, year
 
 	predictionDict = {}
 
 	for numDayIndex in numDaysArray:
-		numDayStock = numDayIndex
-		# for numDayStock in numDaysArray:
-		ndxtVolatilityArray = calcPriceVolatility(numDayIndex, ndxtPrices)
-		ndxtMomentumArray = calcMomentum(numDayIndex, ndxtPrices)
-		predictionForGivenNumDaysDict = {}
+		# numDayStock = numDayIndex
+		for numDayStock in numDaysArray:
+			ndxtVolatilityArray = calcPriceVolatility(numDayIndex, ndxtPrices)
+			ndxtMomentumArray = calcMomentum(numDayIndex, ndxtPrices)
+			predictionForGivenNumDaysDict = {}
 
-		for permno in permnoList:
-			if permno in companiesNotFull:
-				continue
-			print permno
-			percentage = makeModelAndPredict(permno,numDayStock,ndxtVolatilityArray,ndxtMomentumArray,startOfTwelve)
-			predictionForGivenNumDaysDict[permno] = percentage
+			for permno in permnoList:
+				if permno in companiesNotFull:
+					continue
+				print permno
+				percentage = makeModelAndPredict(permno,numDayStock,ndxtVolatilityArray,ndxtMomentumArray,startOfTwelve)
+				predictionForGivenNumDaysDict[permno] = percentage
 
-		# percentage = makeModelAndPredict(10909, numDayStock,ndxtVolatilityArray,ndxtMomentumArray,startOfTwelve)
+			# percentage = makeModelAndPredict(10909, numDayStock,ndxtVolatilityArray,ndxtMomentumArray,startOfTwelve)
 
-		# print predictionForGivenNumDaysDict
-		predictionAccuracies = predictionForGivenNumDaysDict.values()
-		meanAccuracy = np.mean(predictionAccuracies)
-		maxIndex = max(predictionForGivenNumDaysDict, key=predictionForGivenNumDaysDict.get)
-		maxAccuracy = (maxIndex, predictionForGivenNumDaysDict[maxIndex])
-		minIndex = min(predictionForGivenNumDaysDict, key=predictionForGivenNumDaysDict.get)
-		minAccuracy = (minIndex, predictionForGivenNumDaysDict[minIndex])
-		median = np.median(predictionAccuracies)
+			# print predictionForGivenNumDaysDict
+			predictionAccuracies = predictionForGivenNumDaysDict.values()
+			meanAccuracy = np.mean(predictionAccuracies)
+			maxIndex = max(predictionForGivenNumDaysDict, key=predictionForGivenNumDaysDict.get)
+			maxAccuracy = (maxIndex, predictionForGivenNumDaysDict[maxIndex])
+			minIndex = min(predictionForGivenNumDaysDict, key=predictionForGivenNumDaysDict.get)
+			minAccuracy = (minIndex, predictionForGivenNumDaysDict[minIndex])
+			median = np.median(predictionAccuracies)
 
-		numDaysTuple = (numDayIndex, numDayStock)
-		predictionDict[numDaysTuple] = {'mean accuracy':meanAccuracy, 'max':maxAccuracy, 'min':minAccuracy, 'median':median }
+			numDaysTuple = (numDayIndex, numDayStock)
+			predictionDict[numDaysTuple] = {'mean accuracy':meanAccuracy, 'max':maxAccuracy, 'min':minAccuracy, 'median':median }
 
 	# ndxtVolatilityArray = calcPriceVolatility(numDaysArray[4], ndxtPrices)
 	# ndxtMomentumArray = calcMomentum(numDaysArray[4], ndxtPrices)
 	# percentage = makeModelAndPredict(10909, numDaysArray[4],ndxtVolatilityArray,ndxtMomentumArray,startOfTwelve)
 
 	# print predictionDict
-	for numDaysTuple in predictionDict:
-		print "%s:\t %s" % (numDaysTuple, predictionDict[numDaysTuple])
+	sortedTuples = sorted(predictionDict.keys())
+	for numDaysTuple in sortedTuples:
+		print "%s:\t %s\n" % (numDaysTuple, predictionDict[numDaysTuple])
 
 if __name__ == "__main__": 
 	main()
