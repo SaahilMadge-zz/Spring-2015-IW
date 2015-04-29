@@ -8,8 +8,8 @@
 \usepackage{amsmath}
 \usepackage{tabu}
 \usepackage{relsize}
-\usepackage{caption}
 \usepackage{float}
+\usepackage{longtable}
 
 \begin{document}
 
@@ -24,7 +24,7 @@ A Latex template for Independent Work Reports}
 
 \begin{abstract}
 \bigskip
-This document is intended to serve as a sample you can use for independent work reports.  We provide some guidelines on content and formatting.  They are not required, but they might be helpful.
+Support Vector Machine is a machine learning technique used in recent studies to forecast stock prices. This study uses daily closing prices for 34 technology stocks to calculate price volatility and momentum for individual stocks and for the overall sector. These are used as parameters to the SVM model. The model attempts to predict whether a stock price sometime in the future will be higher or lower than it is on a given day. We find little predictive ability in the short-run but definite predictive ability in the long-run.
 \end{abstract}
 
 \section{Introduction}
@@ -33,12 +33,12 @@ Stock price prediction is one of the most widely studied and challenging problem
 
 Traditionally, many prediction models have focused on linear statistical time series models such as ARIMA \cite{bontempi}. However, the variance underlying the movement of stocks and other assets makes linear techniques suboptimal, and non-linear models like ARCH tend to have lower predictive error \cite{zhang}. Recently, researchers have turned to techniques in the computer science fields of big data and machine learning for stock price forecasting. These apply computational power to extend theories in mathematics and statistics. Machine learning algorithms use given data to ``figure out'' the solution to a given problem. Big data and machine learning techniques are also the basis for algorithmic and high-frequency trading routines used by financial institutions.
 
-In this paper we focus on a specific 
+In this paper we focus on a specific machine learning technique known as Support Vector Machines (SVM). Our goal is to use SVM at time $t$ to predict whether a given stock's price is higher or lower on day $t+m$. We look at the technology sector and 34 technology stocks in particular. We input four parameters to the model - the recent price volatility and momentum of the individual stock, and the recent price volatility and momentum of the technology sector. These parameters are calculated using daily closing prices for each stock from the years 2007 through 2014. We analyze whether this historical data can help us predict price direction. If the Efficient Markets Hypothesis (EMH) holds true, prices should follow a random walk and be unpredictable based on historical data. We find that in the short-term this holds true. In the long-term, however, we are able to reach prediction accuracies between 55\% and 60\%. We conclude that our model is able to achieve significant prediction accuracies with some parameters in the long-term, but that we must look at more granular intra-day trading data to achieve prediction accuracies in the short-term.
 
 \section{Background Information}
 \subsection{Stock Market Efficiency}
 \label{subsec: stock}
-Much economic research has been conducted into the {\em Efficient Markets Hypothesis} (EMH) theory, which posits that stock prices already reflect all available information \cite{bodie} and are therefore unpredictable. According to the EMH, stock prices will only respond to new information and so will follow a random walk. If they only respond to new information, they cannot be predicted. That the stocks follow a random walk is actually a sign of market efficiency, since predictable movement would mean that information was not being reflected by the market prices.
+Much economic research has been conducted into the {\em Efficient Markets Hypothesis} theory, which posits that stock prices already reflect all available information \cite{bodie} and are therefore unpredictable. According to the EMH, stock prices will only respond to new information and so will follow a random walk. If they only respond to new information, they cannot be predicted. That the stocks follow a random walk is actually a sign of market efficiency, since predictable movement would mean that information was not being reflected by the market prices.
 
 There are three variants of this theory -- weak, semi-strong, and strong. Most research has concluded that the semi-strong version holds true. This version claims that stock prices reflect all {\em publicly} available information, but private information can be used to unfairly predict profits. This is the basis behind severe insider trading laws.
 
@@ -58,7 +58,7 @@ Supervised learning can be further broken down into classification and regressio
 
 Most research with machine learning forecasting has focused on Artificial Neural Networks (ANN) \cite{krollner}. ANNs have a series of interconnected nodes that simulate individual neurons, and are organized into different layers based on function (input layer, processing layer, output layer, etc.). The ANN assigns weights to connections, and the output is calculated based on the inputs and the weights. As the machine trains, it notices patterns in the training data and reassigns the weights. Kar demonstrates that ANNs are quite accurate when the data does not have sudden variations \cite{kar}. Patel and Yalamalle agree that ANNs can predict with accuracy slightly greater than 50\%, but caution that since stock market data varies so greatly with time and nonlinearly, prediction is difficult even with advanced techniques like ANNs \cite{patel}.
 
-Recent research in the field has used another technique known as Support Vector Machines (SVM) in addition to or as an alternative to ANNs. Whereas ANNs are models that try to minimize classification error within the training data, whereas SVMs may make classification errors within training data in order to minimize overall error across test data too. A major advantage of SVMs is that it finds a global optimum, whereas neural networks may only find a local optimum. See \ref{subsec: svm} for the mathematics behind SVMs.
+Recent research in the field has used another technique known as Support Vector Machines in addition to or as an alternative to ANNs. Whereas ANNs are models that try to minimize classification error within the training data, whereas SVMs may make classification errors within training data in order to minimize overall error across test data too. A major advantage of SVMs is that it finds a global optimum, whereas neural networks may only find a local optimum. See \ref{subsec: svm} for the mathematics behind SVMs.
 
 Using the SVM model for prediction, Kim was able to predict test data outputs with up to 57\% accuracy, significantly above the 50\% threshold \cite{kim}. Shah conducted a survey study on stock prediction using various machine learning models, and found that the best results were achieved with SVM\cite{shah}. His prediction rate of 60\% agrees with Kim's conclusion. Since most recent research has incorporated SVMs, this is the technique we use in our analysis.
 
@@ -102,7 +102,7 @@ where $\delta$ is known as the {\em bandwidth} of the kernel function \cite{kim}
 \subsection{Feature Selection}
 In this study we use four features to predict stock price direction -- price volatility, price momentum, sector volatility, and sector momentum. More detail is provided in Table \ref{table: features}, styled in the form used by Kim\cite{kim}.
 
-\begin{table}[H]
+\begin{table}%[H]
 \caption{Features used in SVM} \label{table: features}
 \small
 \begin{tabular}{p{3cm} p{6cm} p{6cm}}
@@ -155,7 +155,7 @@ Several trends emerge as we increase the parameter $m$. The most striking is tha
 \end{figure}
 
 
-This number does not tell the whole story, however. Looking at the full results in the Appendix, we see that when $m$ is small, varying $n_1$ and $n_2$ has little effect. For example, when $m=1$ mean accuracy is within 49.5\% and 50.53\% for every combination of $n_1, n_2$. It is interesting, however, to note that for prediction when $m=1$ very small values or very large values of $n_1, n_2$ work best. Mean and median accuracy are highest when at least one of the two is 5, or when both are 90 or 270. This implies that very short-term trends, or long-term trends, are best for predicting the next day's price direction. Trends across two weeks or a month, however, perform worse than simple random guessing.
+This number does not tell the whole story, however. Looking at the full results in the Appendix, we see that when $m$ is small, varying $n_1$ and $n_2$ has little effect. For example, when $m=1$ the mean accuracy is within 49.5\% and 50.53\% for every combination of $n_1, n_2$. It is interesting, however, to note that for prediction when $m=1$ very small values or very large values of $n_1, n_2$ work best. Mean and median accuracy are highest when at least one of the two is 5, or when both are 90 or 270. This implies that very short-term trends, or long-term trends, are best for predicting the next day's price direction. Trends across two weeks or a month, however, perform worse than simple random guessing.
 
 The parameters $n_1$ and $n_2$ start to become more important as we increase $m$. When $m=10$ the mean prediction accuracy varies between 53.3\% and 56.8\%, a much larger range than at $m=1$. This disparity is exaggerated when $m=90$, that is, when we try to predict the price direction across the next quarter. Some combinations of $n_1, n_2$, such as $n_1=10, n_2=90$ actually result in less than 50\% accuracy, which means one would be better off flipping a coin. However, other combinations have very high accuracies. For example, $n_1 = 270, n_2 = 5$ results in a 61.5\% prediction accuracy. 
 
@@ -191,6 +191,327 @@ Another area for future growth is to apply our model to stocks in other sectors.
 \section*{Appendix: Results Data}
 \label{app: appendix}
 Here we present the full data table of results.
+
+% \begin{table}[H]
+% \caption{Data showing prediction accuracy summary statistics for each combination of $m, n_1, n_2$}
+\footnotesize
+\begin{longtable}{p{2cm} p{2cm} p{2cm} p{2cm} p{2cm} p{2cm} p{2cm}}
+\caption{Data showing prediction accuracy summary statistics for each combination of $m, n_1, n_2$} \\
+\hline
+$m$ & $n_1$ & $n_2$ & mean & median & max & min \\
+\hline
+% 1 & 5 & 5 & 0.5039 & 0.5086 & 0.5325 & 0.4714 \\
+% & 5 & 10 & 0.5012 & 0.5020 & 0.5525 & 0.6588 \\
+% & 5 & 20 & 0.5042 & 0.5080 & 0.5471 & 0.4635 \\
+% & 5 & 90 & 0.5053 & 0.5086 & 0.5445 & 0.4595 \\
+% & 5 & 270 & 0.5038 & 0.5073 & 0.5458 & 0.4635 \\ 
+% & 10 & 5 & 0.4992 & 0.4967 & 0.5321 & 0.4679 \\
+% & 10 & 10 & 0.4946 & 0.4940 & 0.5564 & 0.4568 \\
+% & 10 & 20 & 0.4943 & 0.4980 & 
+
+1 & 5 & 5 & 0.503945 & 0.508632 & 0.532537 & 0.471448 \\
+
+& 5 & 10 & 0.501211 & 0.501992 & 0.552457 & 0.468792 \\
+
+& 5 & 20 & 0.504179 & 0.507968 & 0.547145 & 0.463479 \\
+
+& 5 & 90 & 0.505273 & 0.508632 & 0.544489 & 0.463479 \\
+
+& 5 & 270 & 0.503828 & 0.507304 & 0.545817 & 0.459495 \\
+
+& 10 & 5 & 0.499253 & 0.496658 & 0.532086 & 0.467914 \\
+
+& 10 & 10 & 0.494571 & 0.494024 & 0.556441 & 0.456839 \\
+
+& 10 & 20 & 0.494336 & 0.498008 & 0.545817 & 0.455511 \\
+
+& 10 & 90 & 0.495508 & 0.499336 & 0.543161 & 0.438247 \\
+
+& 10 & 270 & 0.498477 & 0.498008 & 0.540505 & 0.456839 \\
+
+& 20 & 5 & 0.502909 & 0.503388 & 0.536585 & 0.471545 \\
+
+& 20 & 10 & 0.498971 & 0.500000 & 0.557201 & 0.464334 \\
+
+& 20 & 20 & 0.502578 & 0.505976 & 0.540505 & 0.443559 \\
+
+& 20 & 90 & 0.499258 & 0.496016 & 0.543161 & 0.455511 \\
+
+& 20 & 270 & 0.504726 & 0.511952 & 0.543161 & 0.456839 \\
+
+& 90 & 5 & 0.500925 & 0.502246 & 0.532934 & 0.453593 \\
+
+& 90 & 10 & 0.500568 & 0.502229 & 0.540862 & 0.453195 \\
+
+& 90 & 20 & 0.499871 & 0.500732 & 0.543192 & 0.452416 \\
+
+& 90 & 90 & 0.498984 & 0.495352 & 0.543161 & 0.456839 \\
+
+& 90 & 270 & 0.503711 & 0.504648 & 0.543161 & 0.456839 \\
+
+& 270 & 5 & 0.502712 & 0.509221 & 0.561475 & 0.461066 \\
+
+& 270 & 10 & 0.495168 & 0.498986 & 0.553753 & 0.430020 \\
+
+& 270 & 20 & 0.501696 & 0.501988 & 0.554672 & 0.425447 \\
+
+& 270 & 90 & 0.500616 & 0.496510 & 0.541012 & 0.441536 \\
+
+& 270 & 270 & 0.503437 & 0.506640 & 0.543161 & 0.456839 \\
+\hline
+5 & 5 & 5 & 0.523757 & 0.530708 & 0.618158 & 0.411215 \\
+
+& 5 & 10 & 0.525053 & 0.530040 & 0.588785 & 0.452603 \\
+
+& 5 & 20 & 0.528548 & 0.534713 & 0.579439 & 0.403204 \\
+
+& 5 & 90 & 0.526310 & 0.529372 & 0.592790 & 0.401869 \\
+
+& 5 & 270 & 0.530001 & 0.538051 & 0.598131 & 0.401869 \\
+
+& 10 & 5 & 0.524984 & 0.524194 & 0.598118 & 0.419355 \\
+
+& 10 & 10 & 0.521872 & 0.528037 & 0.588785 & 0.427236 \\
+
+& 10 & 20 & 0.521165 & 0.528037 & 0.590120 & 0.403204 \\
+
+& 10 & 90 & 0.515668 & 0.527370 & 0.596796 & 0.404539 \\
+
+& 10 & 270 & 0.525563 & 0.534045 & 0.599466 & 0.404539 \\
+
+& 20 & 5 & 0.531215 & 0.532698 & 0.588556 & 0.435967 \\
+
+& 20 & 10 & 0.527700 & 0.535183 & 0.587280 & 0.441137 \\
+
+& 20 & 20 & 0.533103 & 0.535381 & 0.610147 & 0.419226 \\
+
+& 20 & 90 & 0.531061 & 0.536716 & 0.612817 & 0.380507 \\
+
+& 20 & 270 & 0.540642 & 0.547397 & 0.612817 & 0.385848 \\
+
+& 90 & 5 & 0.528792 & 0.526355 & 0.602410 & 0.403614 \\
+
+& 90 & 10 & 0.525763 & 0.528401 & 0.596413 & 0.445441 \\
+
+& 90 & 20 & 0.532617 & 0.536819 & 0.625920 & 0.387334 \\
+
+& 90 & 90 & 0.529765 & 0.536048 & 0.598131 & 0.401869 \\
+
+& 90 & 270 & 0.532828 & 0.546061 & 0.588785 & 0.401869 \\
+
+& 270 & 5 & 0.548311 & 0.549587 & 0.607438 & 0.479339 \\
+
+& 270 & 10 & 0.548178 & 0.550102 & 0.605317 & 0.449898 \\
+
+& 270 & 20 & 0.549275 & 0.552104 & 0.607214 & 0.446894 \\
+
+& 270 & 90 & 0.534736 & 0.549209 & 0.604569 & 0.363796 \\
+
+& 270 & 270 & 0.540603 & 0.548064 & 0.615487 & 0.401869 \\
+\hline
+10 & 5 & 5 & 0.537200 & 0.540323 & 0.596774 & 0.452957 \\
+
+& 5 & 10 & 0.539295 & 0.545027 & 0.602151 & 0.440860 \\
+
+& 5 & 20 & 0.540283 & 0.545027 & 0.618280 & 0.375000 \\
+
+& 5 & 90 & 0.540006 & 0.542339 & 0.610215 & 0.361559 \\
+
+& 5 & 270 & 0.543683 & 0.548387 & 0.607527 & 0.376344 \\
+
+& 10 & 5 & 0.536058 & 0.540595 & 0.595399 & 0.441137 \\
+
+& 10 & 10 & 0.534472 & 0.549059 & 0.607527 & 0.438172 \\
+
+& 10 & 20 & 0.535421 & 0.545699 & 0.622312 & 0.372312 \\
+
+& 10 & 90 & 0.533286 & 0.538978 & 0.623656 & 0.380376 \\
+
+& 10 & 270 & 0.544711 & 0.547715 & 0.603495 & 0.412634 \\
+
+& 20 & 5 & 0.539377 & 0.544582 & 0.620027 & 0.441701 \\
+
+& 20 & 10 & 0.540030 & 0.542234 & 0.632153 & 0.420981 \\
+
+& 20 & 20 & 0.540560 & 0.545699 & 0.650538 & 0.381720 \\
+
+& 20 & 90 & 0.541469 & 0.550403 & 0.618280 & 0.369624 \\
+
+& 20 & 270 & 0.550166 & 0.555108 & 0.662634 & 0.373656 \\
+
+& 90 & 5 & 0.539097 & 0.545524 & 0.603945 & 0.435508 \\
+
+& 90 & 10 & 0.535746 & 0.537651 & 0.620482 & 0.405120 \\
+
+& 90 & 20 & 0.535477 & 0.550445 & 0.637982 & 0.341246 \\
+
+& 90 & 90 & 0.540639 & 0.545699 & 0.622312 & 0.380376 \\
+
+& 90 & 270 & 0.539097 & 0.548387 & 0.615591 & 0.357527 \\
+
+& 270 & 5 & 0.559069 & 0.557411 & 0.653445 & 0.427975 \\
+
+& 270 & 10 & 0.556089 & 0.557851 & 0.652893 & 0.407025 \\
+
+& 270 & 20 & 0.568052 & 0.571862 & 0.663968 & 0.374494 \\
+
+& 270 & 90 & 0.549645 & 0.559397 & 0.643617 & 0.347518 \\
+
+& 270 & 270 & 0.543169 & 0.552419 & 0.615591 & 0.357527 \\
+\hline
+20 & 5 & 5 & 0.553775 & 0.559946 & 0.658038 & 0.336512 \\
+
+& 5 & 10 & 0.555658 & 0.566757 & 0.668937 & 0.331063 \\
+
+& 5 & 20 & 0.550809 & 0.555177 & 0.686649 & 0.325613 \\
+
+& 5 & 90 & 0.546642 & 0.564033 & 0.663488 & 0.325613 \\
+
+& 5 & 270 & 0.568040 & 0.580381 & 0.653951 & 0.335150 \\
+
+& 10 & 5 & 0.549827 & 0.551440 & 0.663923 & 0.336077 \\
+
+& 10 & 10 & 0.557020 & 0.566757 & 0.688011 & 0.325613 \\
+
+& 10 & 20 & 0.545560 & 0.555858 & 0.688011 & 0.324251 \\
+
+& 10 & 90 & 0.545560 & 0.560627 & 0.664850 & 0.324251 \\
+
+& 10 & 270 & 0.575373 & 0.581063 & 0.713896 & 0.322888 \\
+
+& 20 & 5 & 0.554365 & 0.556328 & 0.671766 & 0.321280 \\
+
+& 20 & 10 & 0.554802 & 0.558011 & 0.680939 & 0.325967 \\
+
+& 20 & 20 & 0.548325 & 0.556540 & 0.697548 & 0.324251 \\
+
+& 20 & 90 & 0.550128 & 0.574932 & 0.678474 & 0.324251 \\
+
+& 20 & 270 & 0.567879 & 0.580381 & 0.664850 & 0.299728 \\
+
+& 90 & 5 & 0.548491 & 0.565485 & 0.677966 & 0.302003 \\
+
+& 90 & 10 & 0.552303 & 0.566514 & 0.689602 & 0.307339 \\
+
+& 90 & 20 & 0.547263 & 0.564006 & 0.697289 & 0.311747 \\
+
+& 90 & 90 & 0.546281 & 0.568801 & 0.667575 & 0.324251 \\
+
+& 90 & 270 & 0.555698 & 0.577657 & 0.653951 & 0.324251 \\
+
+& 270 & 5 & 0.572871 & 0.575693 & 0.705757 & 0.353945 \\
+
+& 270 & 10 & 0.578369 & 0.580169 & 0.708861 & 0.373418 \\
+
+& 270 & 20 & 0.573955 & 0.586777 & 0.714876 & 0.342975 \\
+
+& 270 & 90 & 0.561319 & 0.596570 & 0.709386 & 0.296029 \\
+
+& 270 & 270 & 0.570724 & 0.580381 & 0.679837 & 0.324251 \\
+& & & & & & \\
+\hline
+90 & 5 & 5 & 0.555679 & 0.570030 & 0.849398 & 0.251506 \\
+
+& 5 & 10 & 0.554571 & 0.545934 & 0.849398 & 0.256024 \\
+
+& 5 & 20 & 0.550053 & 0.551205 & 0.849398 & 0.222892 \\
+
+& 5 & 90 & 0.492470 & 0.491717 & 0.849398 & 0.203313 \\
+
+& 5 & 270 & 0.572821 & 0.602410 & 0.814759 & 0.161145 \\
+
+& 10 & 5 & 0.551415 & 0.562974 & 0.848255 & 0.239757 \\
+
+& 10 & 10 & 0.565556 & 0.574548 & 0.849398 & 0.236446 \\
+
+& 10 & 20 & 0.567328 & 0.588102 & 0.849398 & 0.201807 \\
+
+& 10 & 90 & 0.497387 & 0.520331 & 0.849398 & 0.194277 \\
+
+& 10 & 270 & 0.571536 & 0.597139 & 0.774096 & 0.165663 \\
+
+& 20 & 5 & 0.549760 & 0.566256 & 0.852080 & 0.221880 \\
+
+& 20 & 10 & 0.556845 & 0.563456 & 0.847095 & 0.244648 \\
+
+& 20 & 20 & 0.570030 & 0.571536 & 0.849398 & 0.225904 \\
+
+& 20 & 90 & 0.501329 & 0.516566 & 0.849398 & 0.167169 \\
+
+& 20 & 270 & 0.577826 & 0.617470 & 0.796687 & 0.118976 \\
+
+& 90 & 5 & 0.498324 & 0.524180 & 0.911917 & 0.138169 \\
+
+& 90 & 10 & 0.504684 & 0.517123 & 0.912671 & 0.160959 \\
+
+& 90 & 20 & 0.512280 & 0.520202 & 0.910774 & 0.173401 \\
+
+& 90 & 90 & 0.495748 & 0.496988 & 0.849398 & 0.240964 \\
+
+& 90 & 270 & 0.555679 & 0.576807 & 0.774096 & 0.259036 \\
+
+& 270 & 5 & 0.614993 & 0.585213 & 0.939850 & 0.258145 \\
+
+& 270 & 10 & 0.605926 & 0.602723 & 0.893564 & 0.118812 \\
+
+& 270 & 20 & 0.604149 & 0.608696 & 0.915459 & 0.200483 \\
+
+& 270 & 90 & 0.598991 & 0.596074 & 0.911157 & 0.123967 \\
+
+& 270 & 270 & 0.571580 & 0.602410 & 0.774096 & 0.207831 \\
+\hline
+270 & 5 & 5 & 0.392076 & 0.331612 & 0.983471 & 0.000000 \\
+
+& 5 & 10 & 0.390010 & 0.321281 & 0.985537 & 0.000000 \\
+
+& 5 & 20 & 0.403804 & 0.376033 & 0.987603 & 0.000000 \\
+
+& 5 & 90 & 0.389645 & 0.297521 & 0.971074 & 0.000000 \\
+
+& 5 & 270 & 0.517076 & 0.482438 & 0.987603 & 0.010331 \\
+
+& 10 & 5 & 0.397765 & 0.354906 & 0.987474 & 0.000000 \\
+
+& 10 & 10 & 0.398213 & 0.354339 & 0.987603 & 0.000000 \\
+
+& 10 & 20 & 0.408483 & 0.372934 & 0.987603 & 0.000000 \\
+
+& 10 & 90 & 0.399003 & 0.317149 & 0.971074 & 0.000000 \\
+
+& 10 & 270 & 0.514463 & 0.488636 & 0.987603 & 0.010331 \\
+
+& 20 & 5 & 0.406434 & 0.373134 & 0.982942 & 0.006397 \\
+
+& 20 & 10 & 0.415488 & 0.360759 & 0.985232 & 0.000000 \\
+
+& 20 & 20 & 0.421123 & 0.387397 & 0.987603 & 0.000000 \\
+
+& 20 & 90 & 0.413345 & 0.359504 & 0.971074 & 0.000000 \\
+
+& 20 & 270 & 0.521269 & 0.491736 & 0.987603 & 0.022727 \\
+
+& 90 & 5 & 0.444788 & 0.408521 & 1.000000 & 0.007519 \\
+
+& 90 & 10 & 0.449840 & 0.474010 & 1.000000 & 0.000000 \\
+
+& 90 & 20 & 0.461921 & 0.457729 & 0.997585 & 0.002415 \\
+
+& 90 & 90 & 0.432547 & 0.358471 & 0.971074 & 0.004132 \\
+
+& 90 & 270 & 0.526434 & 0.534091 & 0.987603 & 0.002066 \\
+
+& 270 & 5 & 0.691244 & 0.705479 & 1.000000 & 0.027397 \\
+
+& 270 & 10 & 0.687763 & 0.732143 & 1.000000 & 0.035714 \\
+
+& 270 & 20 & 0.675214 & 0.713675 & 1.000000 & 0.047009 \\
+
+& 270 & 90 & 0.674632 & 0.731908 & 1.000000 & 0.111842 \\
+
+& 270 & 270 & 0.568000 & 0.621901 & 0.987603 & 0.008264 \\
+\hline
+\end{longtable}
+% \end{table}
 
 \newpage
 \bstctlcite{bstctl:etal, bstctl:nodash, bstctl:simpurl}

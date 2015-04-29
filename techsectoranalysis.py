@@ -268,7 +268,7 @@ def main():
 			median = np.median(predictionAccuracies)
 
 			numDaysTuple = (numDayIndex, numDayStock)
-			predictionDict[numDaysTuple] = {'mean accuracy':meanAccuracy, 'max':maxAccuracy, 'min':minAccuracy, 'median':median }
+			predictionDict[numDaysTuple] = {'mean':meanAccuracy, 'max':predictionForGivenNumDaysDict[maxIndex], 'min':predictionForGivenNumDaysDict[minIndex], 'median':median }
 
 	# ndxtVolatilityArray = calcPriceVolatility(numDaysArray[4], ndxtPrices)
 	# ndxtMomentumArray = calcMomentum(numDaysArray[4], ndxtPrices)
@@ -277,7 +277,9 @@ def main():
 	# print predictionDict
 	sortedTuples = sorted(predictionDict.keys())
 	for numDaysTuple in sortedTuples:
-		print "%s:\t %s\n" % (numDaysTuple, predictionDict[numDaysTuple])
+		# print "%s:\t %s\n" % (numDaysTuple, predictionDict[numDaysTuple])
+		sumStats = predictionDict[numDaysTuple]
+		print "& %d & %d & %f & %f & %f & %f \\\\\n" % (numDaysTuple[0], numDaysTuple[1], sumStats['mean'], sumStats['median'], sumStats['max'], sumStats['min'])
 
 if __name__ == "__main__": 
 	main()
