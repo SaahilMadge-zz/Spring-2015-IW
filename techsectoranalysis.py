@@ -2,7 +2,7 @@ import pandas
 import numpy as np
 from sklearn import preprocessing
 from sklearn import svm
-from sklearn import cross_validation
+from sklearn import model_selection
 
 # read the data
 df = pandas.read_csv('techsectordatareal.csv')
@@ -72,11 +72,11 @@ def makeModelAndPredict(permno, numDays, sectorVolatility, sectorMomentum, split
 	Y = []
 	for i in range(numDays, len(companyPrices) - daysAhead):
 		Y.append(1 if companyPrices[i+daysAhead] > companyPrices[i] else -1)
-	print len(Y)
+	print(len(Y))
 
 	# fix the length of Y if necessary
 	if len(Y) > len(X):
-		print 'here2'
+		print('here2')
 		difference = len(Y) - len(X)
 		del Y[:difference]
 
@@ -90,7 +90,7 @@ def makeModelAndPredict(permno, numDays, sectorVolatility, sectorMomentum, split
 	rbf_svm = svm.SVC(kernel='rbf')
 	rbf_svm.fit(X_train, y_train)
 	score = rbf_svm.score(X_test, y_test)
-	print score
+	print(score)
 	return score
 
 def main():
@@ -102,7 +102,7 @@ def main():
 
 	# read the tech sector data
 	ndxtdf = pandas.read_csv('ndxtdata.csv')
-	ndxtdf = ndxtdf.sort_index(by='Date', ascending=True)
+	ndxtdf = ndxtdf.sort_values(by=['Date'], ascending=True)
 	ndxtPrices = list(ndxtdf['Close'])
 
 	# find when 2012 starts
@@ -123,18 +123,18 @@ def main():
 			for permno in permnoList:
 				if permno in companiesNotFull:
 					continue
-				print permno
+				print(permno)
 				percentage = makeModelAndPredict(permno,numDayStock,ndxtVolatilityArray,ndxtMomentumArray,startOfTwelve)
 				predictionForGivenNumDaysDict[permno] = percentage
 
 
 			predictionAccuracies = predictionForGivenNumDaysDict.values()
-			meanAccuracy = np.mean(predictionAccuracies)
+			meanAccuracy = np.mean(list(predictionAccuracies))
 			maxIndex = max(predictionForGivenNumDaysDict, key=predictionForGivenNumDaysDict.get)
 			maxAccuracy = (maxIndex, predictionForGivenNumDaysDict[maxIndex])
 			minIndex = min(predictionForGivenNumDaysDict, key=predictionForGivenNumDaysDict.get)
 			minAccuracy = (minIndex, predictionForGivenNumDaysDict[minIndex])
-			median = np.median(predictionAccuracies)
+			median = np.median(list(predictionAccuracies))
 
 			numDaysTuple = (numDayIndex, numDayStock)
 			predictionDict[numDaysTuple] = {'mean':meanAccuracy, 'max':predictionForGivenNumDaysDict[maxIndex], 'min':predictionForGivenNumDaysDict[minIndex], 'median':median }
@@ -143,7 +143,7 @@ def main():
 	for numDaysTuple in sortedTuples:
 		# print "%s:\t %s\n" % (numDaysTuple, predictionDict[numDaysTuple])
 		sumStats = predictionDict[numDaysTuple]
-		print "& %d & %d & %f & %f & %f & %f \\\\\n" % (numDaysTuple[0], numDaysTuple[1], sumStats['mean'], sumStats['median'], sumStats['max'], sumStats['min'])
+		print("& %d & %d & %f & %f & %f & %f \\\\\n" % (numDaysTuple[0], numDaysTuple[1], sumStats['mean'], sumStats['median'], sumStats['max'], sumStats['min']))
 
 if __name__ == "__main__": 
 	main()
